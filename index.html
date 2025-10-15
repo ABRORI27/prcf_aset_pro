@@ -5,27 +5,86 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PRCF Indonesia - Aset & HR</title>
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* Tambahan perapian layout */
+  header.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  header .logo {
+    height: 60px;
+    width: auto;
+  }
+
+  nav.topnav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  nav.topnav a {
+    text-decoration: none;
+    color: #204c37;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.2s ease;
+  }
+
+  nav.topnav a:hover {
+    color: #2b6b4f;
+  }
+
+  main.hero {
+    padding: 100px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, #f8fbf9, #ffffff);
+  }
+
+  main.hero h1 {
+    font-size: 2rem;
+    color: #0f2b21;
+    margin-bottom: 10px;
+  }
+
+  main.hero p {
+    font-size: 1rem;
+    color: #555;
+  }
+
+  footer.site-footer {
+    text-align: center;
+    padding: 20px;
+    color: #204c37;
+    background: #f6f9f7;
+    border-top: 1px solid #e0e0e0;
+  }
+</style>
 </head>
-<body class="landing">
-<header class="site-header">
-  <div class="container">
-    <img src="assets/img/logo.png" alt="PRCF" class="logo">
+<body>
+  <header class="site-header">
+    <img src="assets/img/logo.png" alt="PRCF Indonesia" class="logo">
     <nav class="topnav">
       <a href="index.html">Home</a>
       <a href="about.php">About</a>
-      <a href="login.php" class="btn">Login</a>
+      <a href="login.php">Login</a>
     </nav>
-  </div>
-</header>
-<main class="hero">
-  <div class="container">
+  </header>
+
+  <main class="hero">
     <h1>Working With People to Help Protect Their Environment</h1>
     <p>Prototype Aset & HR system menyesuaikan style PRCF Indonesia.</p>
-    <a class="btn" href="login.php">Masuk ke Dashboard</a>
-  </div>
-</main>
-<footer class="site-footer">
-  <div class="container">© PRCF Indonesia</div>
-</footer>
+  </main>
+
+  <footer class="site-footer">
+    © PRCF Indonesia
+  </footer>
 </body>
 </html>
