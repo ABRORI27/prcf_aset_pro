@@ -88,6 +88,13 @@ body.light-mode {
   margin-bottom: 6px;
   transition: all 0.2s;
 }
+.sidebar nav a .role-label {
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: 4px;
+  font-size: 0.95em;
+}
+
 .sidebar nav a:hover {
   background-color: #1b2638;
   color: var(--text-dark);

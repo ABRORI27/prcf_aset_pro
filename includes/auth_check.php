@@ -1,16 +1,18 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) session_start();
+if (!function_exists('has_access')) {
 
-if (!isset($_SESSION['user'])) {
-    header('Location: /prcf_aset_pro/login.php');
-    exit;
-}
+    if (session_status() == PHP_SESSION_NONE) session_start();
 
-$user_role = $_SESSION['user']['role'];
+    if (!isset($_SESSION['user'])) {
+        header('Location: /prcf_aset_pro/login.php');
+        exit;
+    }
 
-// Fungsi untuk cek izin
-function has_access($roles) {
-    global $user_role;
-    return in_array($user_role, (array)$roles);
+    $user_role = $_SESSION['user']['role'];
+
+    function has_access($roles) {
+        global $user_role;
+        return in_array($user_role, (array)$roles);
+    }
 }
 ?>
