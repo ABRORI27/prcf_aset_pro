@@ -35,6 +35,29 @@ body.light-mode {
   color: var(--text-light);
 }
 
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.detail-table th, .detail-table td {
+  text-align: left;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.detail-table th {
+  width: 30%;
+  color: var(--dark-green);
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
 /* --- APP LAYOUT --- */
 .app {
   display: flex;
