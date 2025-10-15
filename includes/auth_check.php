@@ -8,7 +8,8 @@ if (!function_exists('has_access')) {
         exit;
     }
 
-    $user_role = $_SESSION['user']['role'];
+    $user_role = ucfirst(strtolower($_SESSION['user']['role']));
+
 
     function has_access($roles) {
         global $user_role;

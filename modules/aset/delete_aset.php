@@ -1,5 +1,7 @@
 <?php
 include '../../includes/koneksi.php';
+include '../../includes/auth_check.php';
+
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
