@@ -1,41 +1,93 @@
-<?php include '../../includes/header.php'; include '../../includes/koneksi.php';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama = $_POST['nama_barang']; $des = $_POST['deskripsi']; $jumlah = intval($_POST['jumlah_unit']);
-    $nomor = $_POST['nomor_seri']; $harga = floatval($_POST['harga_pembelian']); $tanggal = $_POST['waktu_perolehan'];
-    $lokasi = $_POST['lokasi_barang']; $kondisi = $_POST['kondisi_barang']; $kode = $_POST['kode_penomoran'];
-    $program = $_POST['program_pendanaan']; $kategori = $_POST['kategori_barang']; $plat = $_POST['nomor_plat']?:NULL;
-    $tanggal_pajak = $_POST['tanggal_pajak']?:NULL; $pj = $_POST['penanggung_jawab']?:NULL;
-    $chk = $conn->prepare('SELECT id FROM aset_barang WHERE nomor_seri=?'); $chk->bind_param('s',$nomor); $chk->execute(); $chk->store_result();
-    if ($chk->num_rows>0) $error='Nomor seri sudah ada';
-    else {
-        $stmt = $conn->prepare('INSERT INTO aset_barang (nama_barang,deskripsi,jumlah_unit,nomor_seri,harga_pembelian,waktu_perolehan,lokasi_barang,kondisi_barang,kode_penomoran,program_pendanaan,kategori_barang,nomor_plat,tanggal_pajak,penanggung_jawab) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-        $stmt->bind_param('ssisssssssssss',$nama,$des,$jumlah,$nomor,$harga,$tanggal,$lokasi,$kondisi,$kode,$program,$kategori,$plat,$tanggal_pajak,$pj);
-        if ($stmt->execute()) header('Location: output_aset.php');
-        else $error = $stmt->error;
-    }
+<?php
+include '../../includes/header.php';
+include '../../includes/koneksi.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $nama_barang = $_POST['nama_barang'];
+  $deskripsi = $_POST['deskripsi'];
+  $jumlah_unit = $_POST['jumlah_unit'];
+  $nomor_seri = $_POST['nomor_seri'];
+  $harga_pembelian = $_POST['harga_pembelian'];
+  $waktu_perolehan = $_POST['waktu_perolehan'];
+  $lokasi_barang = $_POST['lokasi_barang'];
+  $kondisi_barang = $_POST['kondisi_barang'];
+  $kode_penomoran = $_POST['kode_penomoran'];
+  $program_pendanaan = $_POST['program_pendanaan'];
+  $kategori_barang = $_POST['kategori_barang'];
+  $nomor_plat = $_POST['nomor_plat'];
+  $tanggal_pajak = $_POST['tanggal_pajak'];
+  $penanggung_jawab = $_POST['penanggung_jawab'];
+
+  $sql = "INSERT INTO aset_barang 
+  (nama_barang, deskripsi, jumlah_unit, nomor_seri, harga_pembelian, waktu_perolehan, lokasi_barang, kondisi_barang, kode_penomoran, program_pendanaan, kategori_barang, nomor_plat, tanggal_pajak, penanggung_jawab)
+  VALUES 
+  ('$nama_barang','$deskripsi','$jumlah_unit','$nomor_seri','$harga_pembelian','$waktu_perolehan','$lokasi_barang','$kondisi_barang','$kode_penomoran','$program_pendanaan','$kategori_barang','$nomor_plat','$tanggal_pajak','$penanggung_jawab')";
+
+  if (mysqli_query($conn, $sql)) {
+    echo "<script>alert('Data aset berhasil ditambahkan!');window.location='output_aset.php';</script>";
+  } else {
+    echo "<div class='alert red'>Gagal menambah data: " . mysqli_error($conn) . "</div>";
+  }
 }
 ?>
+
 <div class="page">
-<h2>Tambah Aset</h2>
-<?php if(!empty($error)) echo '<div class="alert">'.$error.'</div>'; ?>
-<form method="post" class="form">
-<label>Nama Barang<input name="nama_barang" required></label>
-<label>Deskripsi<textarea name="deskripsi" required></textarea></label>
-<label>Jumlah Unit<input type="number" name="jumlah_unit" required></label>
-<label>Nomor Seri<input name="nomor_seri" required></label>
-<label>Harga Pembelian<input type="number" step="0.01" name="harga_pembelian" required></label>
-<label>Tanggal Perolehan<input type="date" name="waktu_perolehan" required></label>
-<label>Lokasi<input name="lokasi_barang" required></label>
-<label>Kondisi<select name="kondisi_barang"><option>Baik</option><option>Rusak</option><option>Hilang</option></select></label>
-<label>Kategori<input id="kategori_barang" name="kategori_barang" oninput="toggleKendaraanFields()" required></label>
-<div id="kendaraanFields" style="display:none;">
-<label>Nomor Plat<input name="nomor_plat"></label>
-<label>Tanggal Pajak<input type="date" name="tanggal_pajak"></label>
-<label>Penanggung Jawab<input name="penanggung_jawab"></label>
+  <h2>Tambah Aset Baru</h2>
+  <form method="post" class="form-section">
+
+    <label>Nama Barang</label>
+    <input type="text" name="nama_barang" required>
+
+    <label>Deskripsi</label>
+    <textarea name="deskripsi"></textarea>
+
+    <label>Jumlah Unit</label>
+    <input type="number" name="jumlah_unit" required>
+
+    <label>Nomor Seri (unik)</label>
+    <input type="text" name="nomor_seri">
+
+    <label>Harga Pembelian (Rp)</label>
+    <input type="number" name="harga_pembelian">
+
+    <label>Tanggal Perolehan</label>
+    <input type="date" name="waktu_perolehan">
+
+    <label>Lokasi Barang</label>
+    <input type="text" name="lokasi_barang">
+
+    <label>Kondisi Barang</label>
+    <select name="kondisi_barang">
+      <option value="Baik">Baik</option>
+      <option value="Rusak">Rusak</option>
+      <option value="Hilang">Hilang</option>
+    </select>
+
+    <label>Kode Penomoran</label>
+    <input type="text" name="kode_penomoran">
+
+    <label>Program Pendanaan</label>
+    <input type="text" name="program_pendanaan">
+
+    <label>Kategori Barang</label>
+    <select name="kategori_barang">
+      <option value="Peralatan Kantor">Peralatan Kantor</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Peralatan Lapangan">Peralatan Lapangan</option>
+      <option value="Kendaraan">Kendaraan</option>
+    </select>
+
+    <label>Nomor Plat (jika kendaraan)</label>
+    <input type="text" name="nomor_plat">
+
+    <label>Tanggal Pajak Berlaku Sampai</label>
+    <input type="date" name="tanggal_pajak">
+
+    <label>Penanggung Jawab</label>
+    <input type="text" name="penanggung_jawab">
+
+    <button type="submit" class="btn">Simpan Data</button>
+  </form>
 </div>
-<label>Kode Penomoran<input name="kode_penomoran" required></label>
-<label>Program Pendanaan<input name="program_pendanaan" required></label>
-<button class="btn" type="submit">Simpan</button>
-</form>
-</div>
+
 <?php include '../../includes/footer.php'; ?>
