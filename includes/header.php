@@ -1,13 +1,14 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
+include 'auth_check.php'; // pastikan sudah ada auth_check
 ?>
+
 <!doctype html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PRCF - Internal</title>
-<link rel="stylesheet" href="/prcf_aset_pro/assets/css/style.css">
+<title>PRCF - Internal System</title>
 <link rel="stylesheet" href="/prcf_aset_pro/assets/css/dashboard.css">
 <script src="/prcf_aset_pro/assets/js/main.js" defer></script>
 </head>
@@ -29,4 +30,27 @@ if (session_status() == PHP_SESSION_NONE) session_start();
   </nav>
 </aside>
 
-  <main class="main">
+<main class="main">
+  <div class="header">
+    <h2>Dashboard</h2>
+
+    <div class="user-info">
+      <?php if (isset($_SESSION['user'])): ?>
+        <?php
+          $role = $_SESSION['user']['role'];
+          $roleColor = match ($role) {
+            'Admin' => '#2b6b4f',
+            'Operator' => '#006fbf',
+            'Auditor' => '#a15d00',
+            default => '#666'
+          };
+        ?>
+        <span class="role-badge" style="background: <?= $roleColor ?>;">
+          🧾 Anda login sebagai <strong><?= htmlspecialchars($role) ?></strong>
+        </span>
+        <a href="/prcf_aset_pro/logout.php" class="btn logout-btn">Logout</a>
+      <?php else: ?>
+        <a href="/prcf_aset_pro/login.php" class="btn">Login</a>
+      <?php endif; ?>
+    </div>
+  </div>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!doctype html><html><head><meta charset="utf-8"><title>Register</title>
-<link rel="stylesheet" href="assets/css/style.css"></head><body>
+<link rel="stylesheet" href="assets/css/dashboard.css"></head><body>
 <div class="login-box">
   <h2>Register User</h2>
   <?php if($err) echo '<div class="alert">'.$err.'</div>'; ?>

@@ -360,6 +360,30 @@ body.light-mode .login-box input {
   width: 100%;
   margin-top: 20px;
 }
+
+/* --- USER ROLE BADGE --- */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-badge {
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.logout-btn {
+  background: #b3261e;
+}
+.logout-btn:hover {
+  background: #7a1712;
+}
+
 /* ===============================
     END OF DASHBOARD.CSS
    =============================== */

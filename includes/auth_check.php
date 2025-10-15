@@ -1,8 +1,16 @@
 <?php
-// Simple auth check
 if (session_status() == PHP_SESSION_NONE) session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+
+if (!isset($_SESSION['user'])) {
+    header('Location: /prcf_aset_pro/login.php');
     exit;
+}
+
+$user_role = $_SESSION['user']['role'];
+
+// Fungsi untuk cek izin
+function has_access($roles) {
+    global $user_role;
+    return in_array($user_role, (array)$roles);
 }
 ?>
