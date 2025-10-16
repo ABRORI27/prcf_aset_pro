@@ -16,11 +16,15 @@ include '../../includes/koneksi.php';
   <div class="header">
     <h2>Data Pegawai</h2>
     <div class="action-buttons">
+      <!-- Tombol Kembali ke Dashboard -->
+      <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
+      
 
       <!-- Tombol Tambah -->
       <?php if (has_access(['Admin'])): ?>
         <a href="input_employee.php" class="btn">+ Tambah</a>
       <?php endif; ?>
+
 
       <!-- Tombol Export Excel -->
       <?php if (has_access(['Admin', 'Operator', 'Auditor'])): ?>
