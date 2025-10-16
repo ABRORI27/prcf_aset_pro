@@ -38,7 +38,6 @@
     <h1>Selamat Datang di Sistem Internal PRCF Indonesia</h1>
     <p>Kelola data aset dan sumber daya manusia dengan efisien dan transparan.</p>
     <br>
-    <a href="login.php" class="btn">Masuk ke Dashboard</a>
   </main>
 
   <footer class="site-footer">
