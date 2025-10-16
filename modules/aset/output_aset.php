@@ -13,10 +13,15 @@ include '../../includes/koneksi.php';
 <body>
 <div class="page">
   <div class="header">
-    <h2>Data Aset</h2>
+    <div class="header-left">
+      <h2>Data Aset</h2>
+    </div>
 
-    <!-- Tombol tambah & export -->
+    <!-- Tombol aksi -->
     <div class="actions">
+      <!-- Tombol Kembali ke Dashboard -->
+      <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
+
       <?php if (has_access(['Admin'])): ?>
         <a href="input_aset.php" class="btn">+ Tambah Aset</a>
       <?php endif; ?>

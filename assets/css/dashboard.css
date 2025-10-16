@@ -194,6 +194,17 @@ body.light-mode .card {
 .btn:hover {
   background-color: #1f513b;
 }
+.btn-secondary {
+  background: #999;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.btn-secondary:hover {
+  background: #777;
+}
 
 /* --- ALERT / REMINDER --- */
 .alert {

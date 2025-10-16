@@ -14,9 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $kode_penomoran = $_POST['kode_penomoran'];
   $program_pendanaan = $_POST['program_pendanaan'];
   $kategori_barang = $_POST['kategori_barang'];
-  $nomor_plat = $_POST['nomor_plat'];
-  $tanggal_pajak = $_POST['tanggal_pajak'];
-  $penanggung_jawab = $_POST['penanggung_jawab'];
+  $nomor_plat = $_POST['nomor_plat'] ?? null;
+  $tanggal_pajak = $_POST['tanggal_pajak'] ?? null;
+  $penanggung_jawab = $_POST['penanggung_jawab'] ?? null;
 
   $sql = "INSERT INTO aset_barang 
   (nama_barang, deskripsi, jumlah_unit, nomor_seri, harga_pembelian, waktu_perolehan, lokasi_barang, kondisi_barang, kode_penomoran, program_pendanaan, kategori_barang, nomor_plat, tanggal_pajak, penanggung_jawab)
@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   ('$nama_barang','$deskripsi','$jumlah_unit','$nomor_seri','$harga_pembelian','$waktu_perolehan','$lokasi_barang','$kondisi_barang','$kode_penomoran','$program_pendanaan','$kategori_barang','$nomor_plat','$tanggal_pajak','$penanggung_jawab')";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Data aset berhasil ditambahkan!');window.location='output_aset.php';</script>";
+    echo "<script>alert('✅ Data aset berhasil ditambahkan!');window.location='output_aset.php';</script>";
   } else {
-    echo "<div class='alert red'>Gagal menambah data: " . mysqli_error($conn) . "</div>";
+    echo "<div class='alert red'>❌ Gagal menambah data: " . mysqli_error($conn) . "</div>";
   }
 }
 ?>
@@ -70,24 +70,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" name="program_pendanaan">
 
     <label>Kategori Barang</label>
-    <select name="kategori_barang">
+    <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
+      <option value="">-- Pilih Kategori --</option>
       <option value="Peralatan Kantor">Peralatan Kantor</option>
       <option value="Furniture">Furniture</option>
       <option value="Peralatan Lapangan">Peralatan Lapangan</option>
       <option value="Kendaraan">Kendaraan</option>
     </select>
 
-    <label>Nomor Plat (jika kendaraan)</label>
-    <input type="text" name="nomor_plat">
+    <div id="kendaraanFields" style="display:none;">
+      <label>Nomor Plat (jika kendaraan)</label>
+      <input type="text" name="nomor_plat">
 
-    <label>Tanggal Pajak Berlaku Sampai</label>
-    <input type="date" name="tanggal_pajak">
+      <label>Tanggal Pajak Berlaku Sampai</label>
+      <input type="date" name="tanggal_pajak">
 
-    <label>Penanggung Jawab</label>
-    <input type="text" name="penanggung_jawab">
+      <label>Penanggung Jawab</label>
+      <input type="text" name="penanggung_jawab">
+    </div>
 
     <button type="submit" class="btn">Simpan Data</button>
   </form>
 </div>
+
+<script>
+function toggleKendaraanFields() {
+  const kategori = document.getElementById('kategori_barang').value;
+  const kendaraanFields = document.getElementById('kendaraanFields');
+  kendaraanFields.style.display = (kategori === 'Kendaraan') ? 'block' : 'none';
+}
+</script>
 
 <?php include '../../includes/footer.php'; ?>

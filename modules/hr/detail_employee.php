@@ -2,7 +2,7 @@
 include '../../includes/auth_check.php';
 include '../../includes/koneksi.php';
 
-// Pastikan hanya role tertentu yang bisa akses
+// Akses role
 if (!has_access(['Admin', 'Operator', 'Auditor'])) {
     echo "<script>alert('Akses ditolak!'); window.location='output_employee.php';</script>";
     exit;
@@ -34,6 +34,55 @@ $data = $result->fetch_assoc();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detail Pegawai - PRCF</title>
   <link rel="stylesheet" href="/prcf_aset_pro/assets/css/dashboard.css">
+  <style>
+    /* ======== DETAIL EMPLOYEE CUSTOM STYLE ======== */
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--panel-dark);
+    }
+    .detail-table th, .detail-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .detail-table th {
+      width: 30%;
+      background-color: #1a2435;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .detail-table tr:last-child td {
+      border-bottom: none;
+    }
+    body.light-mode .detail-table {
+      background: var(--panel-light);
+    }
+    body.light-mode .detail-table th {
+      background: #f0f2f5;
+      color: var(--text-light);
+    }
+
+    /* Tombol sejajar kanan bawah */
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-edit {
+      background-color: #2b6b4f;
+    }
+    .btn-delete {
+      background-color: #b3261e;
+    }
+    .btn-delete:hover {
+      background-color: #8e1a14;
+    }
+  </style>
 </head>
 <body>
 <div class="page">
@@ -54,8 +103,8 @@ $data = $result->fetch_assoc();
 
     <?php if (has_access(['Admin', 'Operator'])): ?>
       <div class="action-buttons">
-        <a href="edit_employee.php?id=<?= $data['id']; ?>" class="btn">Edit</a>
-        <a href="delete_employee.php?id=<?= $data['id']; ?>" class="btn" onclick="return confirm('Hapus data ini?')">Hapus</a>
+        <a href="edit_employee.php?id=<?= $data['id']; ?>" class="btn btn-edit">Edit</a>
+        <a href="delete_employee.php?id=<?= $data['id']; ?>" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
       </div>
     <?php endif; ?>
   </div>

@@ -28,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $kode_penomoran = $_POST['kode_penomoran'];
   $program_pendanaan = $_POST['program_pendanaan'];
   $kategori_barang = $_POST['kategori_barang'];
-  $nomor_plat = $_POST['nomor_plat'];
-  $tanggal_pajak = $_POST['tanggal_pajak'];
-  $penanggung_jawab = $_POST['penanggung_jawab'];
+  $nomor_plat = $_POST['nomor_plat'] ?? '';
+  $tanggal_pajak = $_POST['tanggal_pajak'] ?? '';
+  $penanggung_jawab = $_POST['penanggung_jawab'] ?? '';
 
   $sql = "UPDATE aset_barang SET 
             nama_barang='$nama_barang',
@@ -50,9 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           WHERE id='$id'";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Data aset berhasil diperbarui!');window.location='output_aset.php';</script>";
+    echo "<script>alert('✅ Data aset berhasil diperbarui!');window.location='output_aset.php';</script>";
   } else {
-    echo "<div class='alert red'>Gagal memperbarui data: " . mysqli_error($conn) . "</div>";
+    echo "<div class='alert red'>❌ Gagal memperbarui data: " . mysqli_error($conn) . "</div>";
   }
 }
 ?>
@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="page">
   <h2>Edit Data Aset</h2>
   <form method="post" class="form-section">
+
     <label>Nama Barang</label>
     <input type="text" name="nama_barang" value="<?= $aset['nama_barang'] ?>" required>
 
@@ -95,26 +96,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" name="program_pendanaan" value="<?= $aset['program_pendanaan'] ?>">
 
     <label>Kategori Barang</label>
-    <select name="kategori_barang">
+    <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
       <option value="Peralatan Kantor" <?= $aset['kategori_barang']=='Peralatan Kantor'?'selected':'' ?>>Peralatan Kantor</option>
       <option value="Furniture" <?= $aset['kategori_barang']=='Furniture'?'selected':'' ?>>Furniture</option>
       <option value="Peralatan Lapangan" <?= $aset['kategori_barang']=='Peralatan Lapangan'?'selected':'' ?>>Peralatan Lapangan</option>
       <option value="Kendaraan" <?= $aset['kategori_barang']=='Kendaraan'?'selected':'' ?>>Kendaraan</option>
     </select>
 
+    <!-- Field tambahan khusus kendaraan -->
     <div id="kendaraanFields" style="<?= ($aset['kategori_barang']=='Kendaraan') ? 'display:block;' : 'display:none;' ?>">
       <label>Nomor Plat</label>
       <input type="text" name="nomor_plat" value="<?= $aset['nomor_plat'] ?>">
 
       <label>Tanggal Pajak</label>
       <input type="date" name="tanggal_pajak" value="<?= $aset['tanggal_pajak'] ?>">
-    </div>
 
-    <label>Penanggung Jawab</label>
-    <input type="text" name="penanggung_jawab" value="<?= $aset['penanggung_jawab'] ?>">
+      <label>Penanggung Jawab</label>
+      <input type="text" name="penanggung_jawab" value="<?= $aset['penanggung_jawab'] ?>">
+    </div>
 
     <button type="submit" class="btn">Simpan Perubahan</button>
   </form>
 </div>
+
+<!-- JS dinamis untuk tampil/sembunyi field kendaraan -->
+<script>
+function toggleKendaraanFields() {
+  const kategori = document.getElementById('kategori_barang').value;
+  const kendaraanFields = document.getElementById('kendaraanFields');
+  kendaraanFields.style.display = (kategori === 'Kendaraan') ? 'block' : 'none';
+}
+</script>
 
 <?php include '../../includes/footer.php'; ?>
