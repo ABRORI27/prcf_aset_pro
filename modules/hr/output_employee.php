@@ -16,19 +16,18 @@ include '../../includes/koneksi.php';
   <div class="header">
     <h2>Data Pegawai</h2>
     <div class="action-buttons">
+
       <!-- Tombol Kembali ke Dashboard -->
       <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
-      
 
       <!-- Tombol Tambah -->
       <?php if (has_access(['Admin'])): ?>
         <a href="input_employee.php" class="btn">+ Tambah</a>
       <?php endif; ?>
 
-
       <!-- Tombol Export Excel -->
       <?php if (has_access(['Admin', 'Operator', 'Auditor'])): ?>
-        <a href="export_excel_employee.php" class="btn">Export Excel</a>
+        <a href="#" id="exportEmployeeBtn" class="btn">Export Excel</a>
       <?php endif; ?>
 
       <!-- Kolom Pencarian -->
@@ -61,7 +60,6 @@ include '../../includes/koneksi.php';
             <td>{$row['unit']}</td>
             <td>";
 
-          // Role-based tombol aksi
           if (has_access(['Admin', 'Operator'])) {
             echo "
               <a href='edit_employee.php?id={$row['id']}' class='btn'>Edit</a>
@@ -83,5 +81,14 @@ include '../../includes/koneksi.php';
 </div>
 
 <script src="../../assets/js/main.js"></script>
+<script>
+  // === Export sesuai hasil pencarian ===
+  document.getElementById('exportEmployeeBtn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    const search = document.getElementById('searchPegawai').value.trim();
+    const url = 'export_excel_employee.php' + (search ? '?search=' + encodeURIComponent(search) : '');
+    window.location.href = url;
+  });
+</script>
 </body>
 </html>

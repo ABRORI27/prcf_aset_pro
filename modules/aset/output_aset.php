@@ -27,7 +27,7 @@ include '../../includes/koneksi.php';
       <?php endif; ?>
 
       <?php if (has_access(['Admin', 'Auditor'])): ?>
-        <a href="export_excel_aset.php" class="btn">Export Excel</a>
+        <a href="#" id="exportAsetBtn" class="btn">Export Excel</a>
       <?php endif; ?>
 
       <input type="text" id="searchInput" onkeyup="filterTable('tabelAset', this.value)" placeholder="Cari aset...">
@@ -82,5 +82,14 @@ include '../../includes/koneksi.php';
 </div>
 
 <script src="../../assets/js/main.js"></script>
+<script>
+  // === Export sesuai hasil pencarian ===
+  document.getElementById('exportAsetBtn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    const search = document.getElementById('searchInput').value.trim();
+    const url = 'export_excel_aset.php' + (search ? '?search=' + encodeURIComponent(search) : '');
+    window.location.href = url;
+  });
+</script>
 </body>
 </html>
