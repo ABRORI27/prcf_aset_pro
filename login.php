@@ -54,6 +54,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <title>Login - PRCF Indonesia</title>
   <link rel="stylesheet" href="assets/css/dashboard.css">
+  <style>
+    .login-links {
+      margin-top: 15px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .login-links a {
+      color: #2b6b4f;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .login-links a:hover {
+      text-decoration: underline;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="login-box">
@@ -74,6 +96,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <button class="btn" type="submit">Login</button>
     </form>
+    <div class="login-links">
+      <p>Belum punya akun? <a href="register.php">Daftar di sini</a></p>
+      <p><a href="forgot_password.php">Lupa password?</a></p>
+    </div>
   </div>
 </body>
 </html>

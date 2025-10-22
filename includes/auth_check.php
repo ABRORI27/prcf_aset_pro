@@ -1,19 +1,24 @@
 <?php
-if (!function_exists('has_access')) {
+require_once __DIR__ . '/../config/init.php';
 
-    if (session_status() == PHP_SESSION_NONE) session_start();
+// Jalankan session jika belum aktif
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    if (!isset($_SESSION['user'])) {
-        header('Location: /prcf_aset_pro/login.php');
-        exit;
+// 🔐 Fungsi: pastikan user sudah login
+function require_login() {
+    if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+        header('Location: ' . BASE_URL . 'login.php');
+        exit();
     }
+}
 
-    $user_role = ucfirst(strtolower($_SESSION['user']['role']));
-
-
-    function has_access($roles) {
-        global $user_role;
-        return in_array($user_role, (array)$roles);
-    }
+// 🔑 Fungsi: cek apakah user punya akses berdasarkan role
+function has_access($allowed_roles = []) {
+    if (!isset($_SESSION['user']['role'])) return false;
+    $current_role = strtolower($_SESSION['user']['role']);
+    $allowed_roles = array_map('strtolower', (array)$allowed_roles);
+    return in_array($current_role, $allowed_roles);
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 include '../../includes/auth_check.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 ?>
 
 <!doctype html>
@@ -23,7 +23,7 @@ include '../../includes/koneksi.php';
       <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
 
       <?php if (has_access(['Admin'])): ?>
-        <a href="input_aset.php" class="btn">+ Tambah Aset</a>
+        <a href="create.php" class="btn">+ Tambah Aset</a>
       <?php endif; ?>
 
       <?php if (has_access(['Admin', 'Auditor'])): ?>
