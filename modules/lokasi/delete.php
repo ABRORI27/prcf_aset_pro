@@ -2,22 +2,27 @@
 include '../../includes/koneksi.php';
 
 $id = $_GET['id'] ?? null;
-if (!$id) {
-  echo "<script>alert('ID tidak ditemukan!');window.location='read.php';</script>";
+
+if (!$id || !is_numeric($id)) {
+  echo "<script>alert('⚠️ ID lokasi tidak valid!');window.location='read.php';</script>";
   exit;
 }
 
-// Cek apakah lokasi masih dipakai oleh aset
-$cek = mysqli_query($conn, "SELECT COUNT(*) AS total FROM aset_barang WHERE lokasi_id='$id'");
-$row = mysqli_fetch_assoc($cek);
-if ($row['total'] > 0) {
-  echo "<script>alert('❌ Tidak bisa dihapus, lokasi masih digunakan di tabel aset!');window.location='read.php';</script>";
+// Cek apakah data lokasi ada
+$cek = mysqli_query($conn, "SELECT * FROM lokasi_barang WHERE id='$id'");
+if (mysqli_num_rows($cek) === 0) {
+  echo "<script>alert('❌ Data lokasi tidak ditemukan!');window.location='read.php';</script>";
   exit;
 }
 
+// 1️⃣ Kosongkan lokasi_id pada aset_barang yang pakai lokasi ini
+mysqli_query($conn, "UPDATE aset_barang SET lokasi_id=NULL WHERE lokasi_id='$id'");
+
+// 2️⃣ Hapus data lokasi dari tabel lokasi_barang
 if (mysqli_query($conn, "DELETE FROM lokasi_barang WHERE id='$id'")) {
-  echo "<script>alert('✅ Lokasi berhasil dihapus!');window.location='read.php';</script>";
+  echo "<script>alert('✅ Lokasi berhasil dihapus dan aset terkait sudah dilepaskan dari lokasi!');window.location='read.php';</script>";
 } else {
-  echo "<script>alert('❌ Gagal menghapus data: " . mysqli_error($conn) . "');window.location='read.php';</script>";
+  $error = addslashes(mysqli_error($conn));
+  echo "<script>alert('❌ Gagal menghapus lokasi: {$error}');window.location='read.php';</script>";
 }
 ?>

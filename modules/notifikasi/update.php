@@ -4,26 +4,41 @@ include '../../includes/koneksi.php';
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
-  echo "<div class='alert red'>ID notifikasi tidak ditemukan!</div>";
+  echo "<div class='alert red'>❌ ID notifikasi tidak ditemukan!</div>";
   exit;
 }
 
+// Ambil data notifikasi
 $q = mysqli_query($conn, "SELECT * FROM notifikasi WHERE id='$id'");
 $data = mysqli_fetch_assoc($q);
 
+if (!$data) {
+  echo "<div class='alert red'>❌ Data notifikasi tidak ditemukan!</div>";
+  exit;
+}
+
+// Ambil data aset untuk dropdown
+$asetList = mysqli_query($conn, "SELECT id, nama_barang, kode_barang FROM aset_barang ORDER BY nama_barang ASC");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $tipe = $_POST['tipe_notifikasi'];
-  $tanggal = $_POST['tanggal_notifikasi'];
+  $aset_id = $_POST['aset_id'];
+  $tipe_notifikasi = $_POST['tipe_notifikasi'];
+  $tanggal_notifikasi = $_POST['tanggal_notifikasi'];
   $status = $_POST['status'];
 
-  $sql = "UPDATE notifikasi 
-          SET tipe_notifikasi='$tipe', tanggal_notifikasi='$tanggal', status='$status'
-          WHERE id='$id'";
-
-  if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('✅ Data notifikasi berhasil diperbarui!');window.location='read.php';</script>";
+  if ($aset_id == '' || $tipe_notifikasi == '' || $tanggal_notifikasi == '') {
+    echo "<div class='alert red'>❌ Semua field wajib diisi!</div>";
   } else {
-    echo "<div class='alert red'>❌ Gagal memperbarui data: " . mysqli_error($conn) . "</div>";
+    $sql = "UPDATE notifikasi 
+            SET aset_id='$aset_id', tipe_notifikasi='$tipe_notifikasi', 
+                tanggal_notifikasi='$tanggal_notifikasi', status='$status'
+            WHERE id='$id'";
+
+    if (mysqli_query($conn, $sql)) {
+      echo "<script>alert('✅ Notifikasi berhasil diperbarui!');window.location='read.php';</script>";
+    } else {
+      echo "<div class='alert red'>❌ Gagal update: " . mysqli_error($conn) . "</div>";
+    }
   }
 }
 ?>
@@ -32,11 +47,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <h2>Edit Notifikasi</h2>
   <form method="post" class="form-section">
 
+    <label>Pilih Aset Barang</label>
+    <select name="aset_id" required>
+      <option value="">-- Pilih Barang --</option>
+      <?php
+      while ($a = mysqli_fetch_assoc($asetList)) {
+        $selected = ($a['id'] == $data['aset_id']) ? 'selected' : '';
+        echo "<option value='{$a['id']}' $selected>[{$a['kode_barang']}] {$a['nama_barang']}</option>";
+      }
+      ?>
+    </select>
+
     <label>Tipe Notifikasi</label>
     <select name="tipe_notifikasi" required>
-      <option value="Pajak Kendaraan" <?= $data['tipe_notifikasi']=='Pajak Kendaraan'?'selected':'' ?>>Pajak Kendaraan</option>
-      <option value="Perawatan" <?= $data['tipe_notifikasi']=='Perawatan'?'selected':'' ?>>Perawatan</option>
-      <option value="Audit" <?= $data['tipe_notifikasi']=='Audit'?'selected':'' ?>>Audit</option>
+      <option value="">-- Pilih Tipe --</option>
+      <?php
+      $tipeList = ['Pajak Kendaraan', 'Perawatan', 'Audit'];
+      foreach ($tipeList as $t) {
+        $sel = ($t == $data['tipe_notifikasi']) ? 'selected' : '';
+        echo "<option value='$t' $sel>$t</option>";
+      }
+      ?>
     </select>
 
     <label>Tanggal Notifikasi</label>
@@ -44,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label>Status</label>
     <select name="status">
-      <option value="Belum Terkirim" <?= $data['status']=='Belum Terkirim'?'selected':'' ?>>Belum Terkirim</option>
-      <option value="Terkirim" <?= $data['status']=='Terkirim'?'selected':'' ?>>Terkirim</option>
+      <option value="Belum Terkirim" <?= ($data['status'] == 'Belum Terkirim') ? 'selected' : '' ?>>Belum Terkirim</option>
+      <option value="Terkirim" <?= ($data['status'] == 'Terkirim') ? 'selected' : '' ?>>Terkirim</option>
     </select>
 
     <button type="submit" class="btn">Simpan Perubahan</button>

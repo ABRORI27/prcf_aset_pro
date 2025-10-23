@@ -55,9 +55,9 @@ include '../../config/db.php';
           echo "<tr>
             <td>{$no}</td>
             <td>{$row['nama_barang']}</td>
-            <td>{$row['kategori_barang']}</td>
+            <td>{$row['kategori_id']}</td>
             <td>{$row['kondisi_barang']}</td>
-            <td>{$row['lokasi_barang']}</td>
+            <td>{$row['lokasi_id']}</td>
             <td>{$row['program_pendanaan']}</td>
             <td>";
 
