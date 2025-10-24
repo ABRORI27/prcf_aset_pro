@@ -32,5 +32,7 @@ make account in login  you can see login, do it like usual
 ```bash
 http://localhost/prcf_aset_pro/
 ```
-
+```bash
+//// tes update dari lokal 
+```
 after that you can find many eror in this web, help me to solve it :)
