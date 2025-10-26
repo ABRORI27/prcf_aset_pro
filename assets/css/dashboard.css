@@ -1,0 +1,408 @@
+/* =======================================
+   PRCF Indonesia Dashboard Style (Final)
+   ======================================= */
+
+/* --- COLOR VARIABLES --- */
+:root {
+  --accent: #2b6b4f;
+
+  /* Dark Mode Palette */
+  --bg-dark: #0f1724;
+  --panel-dark: #111827;
+  --text-dark: #e6eef0;
+  --muted-dark: #9aa4b2;
+  --sidebar-dark: #0b1220;
+
+  /* Light Mode Palette */
+  --bg-light: #f4f6f9;
+  --panel-light: #ffffff;
+  --text-light: #102a23;
+  --muted-light: #5a5a5a;
+  --sidebar-light: #f0f3f3;
+}
+
+/* --- BASE STYLE --- */
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+  font-family: "Inter", sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* LIGHT MODE OVERRIDE */
+body.light-mode {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+
+/* --- APP LAYOUT --- */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+.main {
+  margin-left: 280px;
+  padding: 28px 40px;
+  flex: 1;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-dark);
+  color: var(--muted-dark);
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar .brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar .brand img {
+  max-width: 150px;
+  border-radius: 10px;
+  transition: filter 0.3s;
+}
+
+.sidebar nav a {
+  display: block;
+  color: var(--muted-dark);
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-bottom: 6px;
+  transition: all 0.2s;
+}
+.sidebar nav a .role-label {
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: 4px;
+  font-size: 0.95em;
+}
+
+.sidebar nav a:hover {
+  background-color: #1b2638;
+  color: var(--text-dark);
+}
+.sidebar nav a.active {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+/* Sidebar Light Mode */
+body.light-mode .sidebar {
+  background-color: var(--sidebar-light);
+  color: var(--text-light);
+}
+body.light-mode .sidebar nav a {
+  color: var(--muted-light);
+}
+body.light-mode .sidebar nav a:hover {
+  background-color: #e6ecea;
+  color: var(--text-light);
+}
+
+/* --- TOGGLE SWITCH --- */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  margin-top: 10px;
+}
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 30px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+input:checked + .slider {
+  background-color: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+/* --- DASHBOARD CARD --- */
+.card {
+  background-color: var(--panel-dark);
+  color: var(--text-dark);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s, color 0.3s;
+}
+body.light-mode .card {
+  background-color: var(--panel-light);
+  color: var(--text-light);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* --- BUTTON STYLE --- */
+.btn {
+  background-color: var(--accent);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.btn:hover {
+  background-color: #1f513b;
+}
+.btn-secondary {
+  background: #999;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.btn-secondary:hover {
+  background: #777;
+}
+
+/* --- ALERT / REMINDER --- */
+.alert {
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+.alert.yellow {
+  background: #fff7d6;
+  color: #6a5400;
+}
+.alert.red {
+  background: #ffe1e1;
+  color: #9b0000;
+}
+.alert.green {
+  background: #e7fbe9;
+  color: #11581f;
+}
+body:not(.light-mode) .alert.yellow {
+  background: #2a2600;
+  color: #fff3b0;
+}
+body:not(.light-mode) .alert.red {
+  background: #3a0000;
+  color: #ffd0d0;
+}
+body:not(.light-mode) .alert.green {
+  background: #072a10;
+  color: #b6f7b8;
+}
+
+/* ===============================
+    HR & ASET PAGE STYLING
+   =============================== */
+
+/* Container */
+.page {
+  background: transparent;
+  padding: 20px;
+}
+
+/* Form Section */
+.form-section {
+  background: var(--panel-dark);
+  color: var(--text-dark);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+body.light-mode .form-section {
+  background: var(--panel-light);
+  color: var(--text-light);
+}
+
+/* Form Elements */
+.form-section label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+}
+.form-section input,
+.form-section select,
+.form-section textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #23303a;
+  background: #0b1220;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+body.light-mode .form-section input,
+body.light-mode .form-section select,
+body.light-mode .form-section textarea {
+  background: #fff;
+  border: 1px solid #ccc;
+  color: var(--text-light);
+}
+
+/* Table Styling */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.table th {
+  background: #1a2435;
+  font-weight: 600;
+  color: #e6eef0;
+}
+.table tr:nth-child(even) {
+  background: #182130;
+}
+.table tr:hover {
+  background: #233142;
+}
+body.light-mode .table th {
+  background: #f0f2f5;
+  color: #102a23;
+}
+body.light-mode .table td {
+  border-bottom: 1px solid #e0e0e0;
+}
+body.light-mode .table tr:nth-child(even) {
+  background: #fafafa;
+}
+body.light-mode .table tr:hover {
+  background: #f1f5f3;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===============================
+    LOGIN & REGISTER PAGE STYLING
+   =============================== */
+/* Login/Register Box */
+.login-box {
+  background: var(--panel-dark);
+  color: var(--text-dark);
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+body.light-mode .login-box {
+  background: var(--panel-light);
+  color: var(--text-light);
+}
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.login-box label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #23303a;
+  background: #0b1220;
+  color: var(--text-dark);
+}
+body.light-mode .login-box input {
+  background: #fff;
+  border: 1px solid #ccc;
+  color: var(--text-light);
+}
+.login-box .btn {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* --- USER ROLE BADGE --- */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-badge {
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.logout-btn {
+  background: #b3261e;
+}
+.logout-btn:hover {
+  background: #7a1712;
+}
+
+/* ===============================
+    END OF DASHBOARD.CSS
+   =============================== */
