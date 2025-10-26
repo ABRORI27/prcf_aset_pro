@@ -3,9 +3,8 @@ include '../../includes/header.php';
 include '../../includes/koneksi.php';
 include '../../includes/auth_check.php';
 
-// Cek izin akses
 if (!has_access(['Admin', 'Auditor'])) {
-  echo "<script>alert('Anda tidak memiliki izin untuk melihat detail aset!');window.location='output_aset.php';</script>";
+  echo "<script>alert('Anda tidak memiliki izin untuk melihat detail aset!');window.location='" . BASE_URL . "modules/aset_barang/read.php';</script>";
   exit;
 }
 
@@ -15,8 +14,18 @@ if (!$id) {
   exit;
 }
 
-// Ambil data aset dari database
-$q = mysqli_query($conn, "SELECT * FROM aset_barang WHERE id = '$id'");
+// Ambil data aset dengan JOIN ke kategori, lokasi, program
+$q = mysqli_query($conn, "
+    SELECT ab.*, 
+           k.nama_kategori, 
+           l.nama_lokasi, 
+           p.nama_program
+    FROM aset_barang ab
+    LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
+    LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
+    LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
+    WHERE ab.id = '$id'
+");
 $aset = mysqli_fetch_assoc($q);
 
 if (!$aset) {
@@ -28,20 +37,21 @@ if (!$aset) {
 <div class="page">
   <div class="header">
     <h2>Detail Data Aset</h2>
-    <a href="output_aset.php" class="btn">← Kembali</a>
+    <!-- Link Kembali menggunakan BASE_URL -->
+    <a href="<?= BASE_URL ?>modules/aset_barang/read.php" class="btn">← Kembali</a>
   </div>
 
   <div class="card">
     <table class="table">
       <tr><th width="220">Nama Barang</th><td><?= htmlspecialchars($aset['nama_barang']) ?></td></tr>
       <tr><th>Deskripsi</th><td><?= nl2br(htmlspecialchars($aset['deskripsi'])) ?></td></tr>
-      <tr><th>Kategori Barang</th><td><?= htmlspecialchars($aset['kategori_barang']) ?></td></tr>
+      <tr><th>Kategori Barang</th><td><?= htmlspecialchars($aset['nama_kategori'] ?? '-') ?></td></tr>
       <tr><th>Jumlah Unit</th><td><?= htmlspecialchars($aset['jumlah_unit']) ?></td></tr>
       <tr><th>Nomor Seri</th><td><?= htmlspecialchars($aset['nomor_seri']) ?></td></tr>
       <tr><th>Kode Penomoran</th><td><?= htmlspecialchars($aset['kode_penomoran']) ?></td></tr>
       <tr><th>Harga Pembelian</th><td>Rp <?= number_format($aset['harga_pembelian'], 0, ',', '.') ?></td></tr>
       <tr><th>Waktu Perolehan</th><td><?= htmlspecialchars($aset['waktu_perolehan']) ?></td></tr>
-      <tr><th>Lokasi Barang</th><td><?= htmlspecialchars($aset['lokasi_barang']) ?></td></tr>
+      <tr><th>Lokasi Barang</th><td><?= htmlspecialchars($aset['nama_lokasi'] ?? '-') ?></td></tr>
       <tr><th>Kondisi Barang</th>
           <td>
             <?php
@@ -54,16 +64,15 @@ if (!$aset) {
             ?>
           </td>
       </tr>
-      <tr><th>Program Pendanaan</th><td><?= htmlspecialchars($aset['program_pendanaan']) ?></td></tr>
+      <tr><th>Program Pendanaan</th><td><?= htmlspecialchars($aset['nama_program'] ?? '-') ?></td></tr>
       <tr><th>Penanggung Jawab</th><td><?= htmlspecialchars($aset['penanggung_jawab']) ?></td></tr>
       
-      <?php if ($aset['kategori_barang'] === 'Kendaraan'): ?>
+      <?php if ($aset['nama_kategori'] === 'Kendaraan'): ?>
       <tr><th>Nomor Plat</th><td><?= htmlspecialchars($aset['nomor_plat']) ?></td></tr>
       <tr><th>Tanggal Pajak</th>
           <td>
             <?= htmlspecialchars($aset['tanggal_pajak']) ?>
             <?php
-              // reminder pajak otomatis
               if (!empty($aset['tanggal_pajak'])) {
                 $today = new DateTime();
                 $due = new DateTime($aset['tanggal_pajak']);

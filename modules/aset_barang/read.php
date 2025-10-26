@@ -19,7 +19,6 @@ include '../../config/db.php';
 
     <!-- Tombol aksi -->
     <div class="actions">
-      <!-- Tombol Kembali ke Dashboard -->
       <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
 
       <?php if (has_access(['Admin'])): ?>
@@ -43,33 +42,47 @@ include '../../config/db.php';
           <th>Kategori</th>
           <th>Kondisi</th>
           <th>Lokasi</th>
-          <th>Program</th>
+          <th>Program Pendanaan</th>
           <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
       <?php
         $no = 1;
-        $result = mysqli_query($conn, "SELECT * FROM aset_barang ORDER BY id DESC");
+        // 🔹 Gunakan JOIN agar menampilkan nama kategori, lokasi, dan program
+        $query = "
+          SELECT ab.*, 
+                 k.nama_kategori, 
+                 l.nama_lokasi, 
+                 p.nama_program
+          FROM aset_barang ab
+          LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
+          LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
+          LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
+          ORDER BY ab.id DESC
+        ";
+        $result = mysqli_query($conn, $query);
+
         while ($row = mysqli_fetch_assoc($result)) {
           echo "<tr>
             <td>{$no}</td>
             <td>{$row['nama_barang']}</td>
-            <td>{$row['kategori_id']}</td>
+            <td>" . ($row['nama_kategori'] ?? '-') . "</td>
             <td>{$row['kondisi_barang']}</td>
-            <td>{$row['lokasi_id']}</td>
-            <td>{$row['program_pendanaan']}</td>
+            <td>" . ($row['nama_lokasi'] ?? '-') . "</td>
+            <td>" . ($row['nama_program'] ?? '-') . "</td>
             <td>";
 
+          // 🔹 Aksi tergantung role pengguna
           if (has_access(['Admin', 'Operator'])) {
             echo "
-              <a href='edit_aset.php?id={$row['id']}' class='btn'>Edit</a>
-              <a href='delete_aset.php?id={$row['id']}' class='btn' onclick='return confirm(\"Hapus data ini?\")'>Hapus</a>
+              <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
+              <a href='delete.php?id={$row['id']}' class='btn' onclick='return confirm(\"Hapus data ini?\")'>Hapus</a>
             ";
           }
 
           if (has_access(['Admin', 'Auditor'])) {
-            echo " <a href='detail_aset.php?id={$row['id']}' class='btn'>Detail</a>";
+            echo " <a href='detail.php?id={$row['id']}' class='btn'>Detail</a>";
           }
 
           echo "</td></tr>";
@@ -81,6 +94,6 @@ include '../../config/db.php';
   </div>
 </div>
 
-<script src="../../assets/js/main.js"></script>
+<script src='../../assets/js/main.js'></script>
 </body>
 </html>

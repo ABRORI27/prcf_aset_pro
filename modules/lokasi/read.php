@@ -24,17 +24,23 @@ include '../../includes/koneksi.php';
       <tbody>
         <?php
         $no = 1;
-        // Ambil data lokasi + jumlah barang yang terkait
+
+        // ✅ Perbaikan di sini
         $sql = "
           SELECT l.*, 
                  COUNT(a.id) AS total_barang,
                  GROUP_CONCAT(a.nama_barang SEPARATOR ', ') AS daftar_barang
           FROM lokasi_barang l
-          LEFT JOIN aset_barang a ON a.lokasi_id = l.id
+          LEFT JOIN aset_barang a ON a.lokasi_barang = l.id
           GROUP BY l.id
           ORDER BY l.id ASC
         ";
+
         $result = mysqli_query($conn, $sql);
+
+        if (!$result) {
+          die('Query gagal: ' . mysqli_error($conn));
+        }
 
         if (mysqli_num_rows($result) > 0) {
           while ($row = mysqli_fetch_assoc($result)) {

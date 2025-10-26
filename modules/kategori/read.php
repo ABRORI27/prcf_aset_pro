@@ -22,15 +22,22 @@ include '../../includes/koneksi.php';
       <tbody>
       <?php
         $no = 1;
-        $query = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY kategori_id ASC");
+        // ✅ gunakan nama kolom yang benar: id
+        $query = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY id ASC");
+
+        // ✅ tambahkan validasi untuk cek apakah query berhasil
+        if (!$query) {
+          die("Query gagal: " . mysqli_error($conn));
+        }
+
         while ($row = mysqli_fetch_assoc($query)) {
           echo "<tr>
                   <td>{$no}</td>
                   <td>{$row['nama_kategori']}</td>
                   <td>{$row['deskripsi']}</td>
                   <td>
-                    <a href='update.php?id={$row['kategori_id']}' class='btn'>Edit</a>
-                    <a href='delete.php?id={$row['kategori_id']}' class='btn red' onclick='return confirm(\"Hapus kategori ini?\")'>Hapus</a>
+                    <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
+                    <a href='delete.php?id={$row['id']}' class='btn red' onclick='return confirm(\"Hapus kategori ini?\")'>Hapus</a>
                   </td>
                 </tr>";
           $no++;
