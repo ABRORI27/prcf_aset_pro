@@ -18,7 +18,7 @@ if (!$data) {
 }
 
 // Ambil aset yang sedang terhubung dengan lokasi ini (kalau ada)
-$q_aset_terkait = mysqli_query($conn, "SELECT id FROM aset_barang WHERE lokasi_id='$id' LIMIT 1");
+$q_aset_terkait = mysqli_query($conn, "SELECT id FROM aset_barang WHERE lokasi_barang='$id' LIMIT 1");
 $aset_terkait = mysqli_fetch_assoc($q_aset_terkait);
 $aset_terkait_id = $aset_terkait['id'] ?? '';
 

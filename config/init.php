@@ -69,14 +69,14 @@ if (DEBUG_MODE) {
     ini_set('display_errors', 0);
 }
 
-// 9️⃣ Tambahan keamanan dasar (anti hijack session)
-if (isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
-    session_unset();
-    session_destroy();
-    die('⚠️ Sesi tidak valid, silakan login ulang.');
-} else {
-    $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-}
+// // 9️⃣ Tambahan keamanan dasar (anti hijack session)
+// if (isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
+//     session_unset();
+//     session_destroy();
+//     die('⚠️ Sesi tidak valid, silakan login ulang.');
+// } else {
+//     $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+// }
 
 // 10️⃣ Log aktivitas opsional (bisa dikembangkan nanti)
 if (!function_exists('log_activity')) {

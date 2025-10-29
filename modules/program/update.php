@@ -17,10 +17,10 @@ if (!$program) {
 }
 
 // Ambil daftar aset untuk dropdown
-$aset_result = mysqli_query($conn, "SELECT id, nama_barang, program_id FROM aset_barang ORDER BY id ASC");
+$aset_result = mysqli_query($conn, "SELECT id, nama_barang, program_pendanaan FROM aset_barang ORDER BY id ASC");
 
 // Ambil aset yang saat ini terkait dengan program ini (jika ada)
-$current_aset = mysqli_query($conn, "SELECT id FROM aset_barang WHERE program_id='$id'");
+$current_aset = mysqli_query($conn, "SELECT id FROM aset_barang WHERE program_pendanaan='$id'");
 $current_aset_row = mysqli_fetch_assoc($current_aset);
 $current_aset_id = $current_aset_row ? $current_aset_row['id'] : null;
 
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       // 2️⃣ Kosongkan aset lama (jika ada)
       if ($current_aset_id && $current_aset_id != $aset_id_baru) {
-        mysqli_query($conn, "UPDATE aset_barang SET program_id=NULL WHERE id='$current_aset_id'");
+        mysqli_query($conn, "UPDATE aset_barang SET program_pendanaan=NULL WHERE id='$current_aset_id'");
       }
 
       // 3️⃣ Update aset baru agar terkait dengan program ini

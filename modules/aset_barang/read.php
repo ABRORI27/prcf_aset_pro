@@ -26,7 +26,7 @@ include '../../config/db.php';
       <?php endif; ?>
 
       <?php if (has_access(['Admin', 'Auditor'])): ?>
-        <a href="export_excel_aset.php" class="btn">Export Excel</a>
+        <a href="export.php" class="btn">Export Excel</a>
       <?php endif; ?>
 
       <input type="text" id="searchInput" onkeyup="filterTable('tabelAset', this.value)" placeholder="Cari aset...">
@@ -51,10 +51,10 @@ include '../../config/db.php';
         $no = 1;
         // 🔹 Gunakan JOIN agar menampilkan nama kategori, lokasi, dan program
         $query = "
-          SELECT ab.*, 
-                 k.nama_kategori, 
-                 l.nama_lokasi, 
-                 p.nama_program
+          SELECT ab.*,
+                k.nama_kategori,
+                l.nama_lokasi,
+                p.nama_program
           FROM aset_barang ab
           LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
           LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id

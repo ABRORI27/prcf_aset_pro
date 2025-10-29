@@ -2,84 +2,68 @@
 include '../../includes/header.php';
 include '../../includes/koneksi.php';
 
-$id = $_GET['id'] ?? null;
-if (!$id) {
-  echo "<div class='alert red'>❌ ID notifikasi tidak ditemukan!</div>";
-  exit;
-}
+$id = (int)($_GET['id'] ?? 0);
 
-// Ambil data notifikasi
-$q = mysqli_query($conn, "SELECT * FROM notifikasi WHERE id='$id'");
-$data = mysqli_fetch_assoc($q);
+$sql = "
+  SELECT n.*, a.nama_barang 
+  FROM notifikasi n
+  LEFT JOIN aset_barang a ON n.aset_id = a.id
+  WHERE n.id = $id
+";
+$result = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($result);
 
 if (!$data) {
-  echo "<div class='alert red'>❌ Data notifikasi tidak ditemukan!</div>";
+  echo "<div class='alert red'>❌ Notifikasi tidak ditemukan!</div>";
+  include '../../includes/footer.php';
   exit;
 }
 
-// Ambil data aset untuk dropdown
-$asetList = mysqli_query($conn, "SELECT id, nama_barang, kode_barang FROM aset_barang ORDER BY nama_barang ASC");
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $aset_id = $_POST['aset_id'];
-  $tipe_notifikasi = $_POST['tipe_notifikasi'];
-  $tanggal_notifikasi = $_POST['tanggal_notifikasi'];
-  $status = $_POST['status'];
+  $tipe = mysqli_real_escape_string($conn, $_POST['tipe_notifikasi']);
+  $tgl = mysqli_real_escape_string($conn, $_POST['tanggal_notifikasi']);
+  $status = mysqli_real_escape_string($conn, $_POST['status']);
 
-  if ($aset_id == '' || $tipe_notifikasi == '' || $tanggal_notifikasi == '') {
-    echo "<div class='alert red'>❌ Semua field wajib diisi!</div>";
+  $update = "
+    UPDATE notifikasi
+    SET tipe_notifikasi='$tipe',
+        tanggal_notifikasi='$tgl',
+        status='$status'
+    WHERE id='$id'
+  ";
+
+  if (mysqli_query($conn, $update)) {
+    echo "<script>alert('✅ Notifikasi berhasil diupdate!');window.location='read.php';</script>";
   } else {
-    $sql = "UPDATE notifikasi 
-            SET aset_id='$aset_id', tipe_notifikasi='$tipe_notifikasi', 
-                tanggal_notifikasi='$tanggal_notifikasi', status='$status'
-            WHERE id='$id'";
-
-    if (mysqli_query($conn, $sql)) {
-      echo "<script>alert('✅ Notifikasi berhasil diperbarui!');window.location='read.php';</script>";
-    } else {
-      echo "<div class='alert red'>❌ Gagal update: " . mysqli_error($conn) . "</div>";
-    }
+    echo "<div class='alert red'>❌ Gagal update: " . mysqli_error($conn) . "</div>";
   }
 }
 ?>
 
 <div class="page">
   <h2>Edit Notifikasi</h2>
-  <form method="post" class="form-section">
 
-    <label>Pilih Aset Barang</label>
-    <select name="aset_id" required>
-      <option value="">-- Pilih Barang --</option>
-      <?php
-      while ($a = mysqli_fetch_assoc($asetList)) {
-        $selected = ($a['id'] == $data['aset_id']) ? 'selected' : '';
-        echo "<option value='{$a['id']}' $selected>[{$a['kode_barang']}] {$a['nama_barang']}</option>";
-      }
-      ?>
-    </select>
+  <form method="post" class="form-section">
+    <label>Nama Aset</label>
+    <input type="text" value="<?= htmlspecialchars($data['nama_barang']) ?>" disabled>
 
     <label>Tipe Notifikasi</label>
-    <select name="tipe_notifikasi" required>
-      <option value="">-- Pilih Tipe --</option>
-      <?php
-      $tipeList = ['Pajak Kendaraan', 'Perawatan', 'Audit'];
-      foreach ($tipeList as $t) {
-        $sel = ($t == $data['tipe_notifikasi']) ? 'selected' : '';
-        echo "<option value='$t' $sel>$t</option>";
-      }
-      ?>
-    </select>
+    <input type="text" name="tipe_notifikasi" value="<?= htmlspecialchars($data['tipe_notifikasi']) ?>" required>
 
     <label>Tanggal Notifikasi</label>
-    <input type="date" name="tanggal_notifikasi" value="<?= $data['tanggal_notifikasi'] ?>" required>
+    <input type="date" name="tanggal_notifikasi" value="<?= htmlspecialchars($data['tanggal_notifikasi']) ?>" required>
 
     <label>Status</label>
-    <select name="status">
-      <option value="Belum Terkirim" <?= ($data['status'] == 'Belum Terkirim') ? 'selected' : '' ?>>Belum Terkirim</option>
-      <option value="Terkirim" <?= ($data['status'] == 'Terkirim') ? 'selected' : '' ?>>Terkirim</option>
+    <select name="status" required>
+      <option value="Belum Terkirim" <?= $data['status']=='Belum Terkirim'?'selected':''; ?>>
+        Belum Terkirim
+      </option>
+      <option value="Terkirim" <?= $data['status']=='Terkirim'?'selected':''; ?>>
+        Terkirim
+      </option>
     </select>
 
-    <button type="submit" class="btn">Simpan Perubahan</button>
+    <button type="submit" class="btn">Update</button>
   </form>
 </div>
 
