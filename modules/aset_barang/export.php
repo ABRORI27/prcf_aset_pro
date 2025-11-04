@@ -14,6 +14,12 @@ if (file_exists($autoloadPath)) {
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+$kategori = isset($_GET['kategori']) ? (int) $_GET['kategori'] : 0;
+
+if ($kategori > 0) {
+    $sql .= (strpos($sql, 'WHERE') === false ? ' WHERE' : ' AND') . " ab.kategori_barang = $kategori";
+}
+
 // Ambil parameter pencarian dari GET
 $search = $_GET['search'] ?? '';
 $where = '';

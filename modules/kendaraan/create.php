@@ -20,12 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $penanggung_jawab = trim($_POST['penanggung_jawab']);
 
     // 1️⃣ Insert otomatis ke aset_barang
-    $stmtAset = $conn->prepare("INSERT INTO aset_barang (nama_barang, kategori_id, kondisi_barang)
+    $stmtAset = $conn->prepare("INSERT INTO aset_barang (nama_barang, kategori_barang, kondisi_barang)
                                 VALUES (?, ?, ?)");
     $nama_barang = $_POST['nama_kendaraan']; 
-    $kategori_id = 4; // misal ID kategori "Kendaraan"
+    $kategori_barang = 4; // misal ID kategori "Kendaraan"
     $kondisi = 'Baik';
-    $stmtAset->bind_param("sis", $nama_barang, $kategori_id, $kondisi);
+    $stmtAset->bind_param("sis", $nama_barang, $kategori_barang, $kondisi);
     $stmtAset->execute();
 
     // 2️⃣ ambil aset_id yang baru saja di-insert

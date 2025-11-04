@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $program_id = mysqli_insert_id($conn);
 
       // 2️⃣ Update aset_barang agar kolom program_id diisi dengan ID program baru
-      $update_aset = "UPDATE aset_barang SET program_id='$program_id' WHERE id='$aset_id'";
+      $update_aset = "UPDATE aset_barang SET program_pendanaan='$program_pendanaan' WHERE id='$aset_barang'";
       if (mysqli_query($conn, $update_aset)) {
         echo "<script>alert('✅ Program berhasil dibuat dan aset berhasil dikaitkan!');window.location='read.php';</script>";
       } else {

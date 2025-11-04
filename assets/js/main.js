@@ -48,3 +48,7 @@ function toggleKendaraanFields() {
       ? "block"
       : "none";
 }
+function toggleKendaraanFields() {
+  const kategori = document.getElementById('kategori_barang').value;
+  document.getElementById('kendaraanFields').style.display = (kategori == 4) ? 'block' : 'none';
+}

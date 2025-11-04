@@ -10,7 +10,7 @@ if (!$id) {
 }
 
 // 1️⃣ Kosongkan relasi program_id di aset_barang
-$clear_query = "UPDATE aset_barang SET program_id=NULL WHERE program_id='$id'";
+$clear_query = "UPDATE aset_barang SET program_pendanaan=NULL WHERE program_pendanaan='$id'";
 if (!mysqli_query($conn, $clear_query)) {
   echo "<script>alert('⚠️ Gagal mengosongkan relasi aset: " . mysqli_error($conn) . "');window.location='read.php';</script>";
   exit;

@@ -8,9 +8,12 @@ if (!$id) {
   exit;
 }
 
-// Ambil data aset berdasarkan ID
-$q = mysqli_query($conn, "SELECT * FROM aset_barang WHERE id = '$id'");
-$aset = mysqli_fetch_assoc($q);
+// Ambil data aset
+$stmt = $conn->prepare("SELECT * FROM aset_barang WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$aset = $stmt->get_result()->fetch_assoc();
+
 if (!$aset) {
   echo "<div class='alert red'>Data aset tidak ditemukan!</div>";
   exit;
@@ -27,32 +30,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $kondisi_barang = $_POST['kondisi_barang'];
   $kode_penomoran = $_POST['kode_penomoran'];
   $program_pendanaan = $_POST['program_pendanaan'];
-  $kategori_barang = $_POST['kategori_barang'];
-  $nomor_plat = $_POST['nomor_plat'] ?? '';
-  $tanggal_pajak = $_POST['tanggal_pajak'] ?? '';
-  $penanggung_jawab = $_POST['penanggung_jawab'] ?? '';
+  $kategori_barang = $_POST['kategori_barang']; // ID kategori
+  $nomor_plat = $_POST['nomor_plat'] ?? null;
+  $tanggal_pajak = $_POST['tanggal_pajak'] ?? null;
+  $penanggung_jawab = $_POST['penanggung_jawab'] ?? null;
 
-  $sql = "UPDATE aset_barang SET 
-            nama_barang='$nama_barang',
-            deskripsi='$deskripsi',
-            jumlah_unit='$jumlah_unit',
-            nomor_seri='$nomor_seri',
-            harga_pembelian='$harga_pembelian',
-            waktu_perolehan='$waktu_perolehan',
-            lokasi_barang='$lokasi_barang',
-            kondisi_barang='$kondisi_barang',
-            kode_penomoran='$kode_penomoran',
-            program_pendanaan='$program_pendanaan',
-            kategori_barang='$kategori_barang',
-            nomor_plat='$nomor_plat',
-            tanggal_pajak='$tanggal_pajak',
-            penanggung_jawab='$penanggung_jawab'
-          WHERE id='$id'";
+  // Jika bukan kategori Kendaraan (ID != 4), kosongkan fields kendaraan
+  if ($kategori_barang != 4) {
+    $nomor_plat = null;
+    $tanggal_pajak = null;
+    $penanggung_jawab = null;
+  }
 
-  if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('✅ Data aset berhasil diperbarui!');window.location='output_aset.php';</script>";
+  $stmtUpdate = $conn->prepare("
+    UPDATE aset_barang SET 
+      nama_barang = ?, deskripsi = ?, jumlah_unit = ?, nomor_seri = ?, 
+      harga_pembelian = ?, waktu_perolehan = ?, lokasi_barang = ?, 
+      kondisi_barang = ?, kode_penomoran = ?, program_pendanaan = ?, 
+      kategori_barang = ?, nomor_plat = ?, tanggal_pajak = ?, penanggung_jawab = ?
+    WHERE id = ?
+  ");
+
+  $stmtUpdate->bind_param(
+    "ssississsissssi",
+    $nama_barang, $deskripsi, $jumlah_unit, $nomor_seri, 
+    $harga_pembelian, $waktu_perolehan, $lokasi_barang, 
+    $kondisi_barang, $kode_penomoran, $program_pendanaan, 
+    $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab, $id
+  );
+
+  if ($stmtUpdate->execute()) {
+    echo "<script>alert('✅ Data aset berhasil diperbarui!');window.location='read.php';</script>";
+    exit;
   } else {
-    echo "<div class='alert red'>❌ Gagal memperbarui data: " . mysqli_error($conn) . "</div>";
+    echo "<div class='alert red'>❌ Gagal memperbarui data: " . $stmtUpdate->error . "</div>";
   }
 }
 ?>
@@ -62,10 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form method="post" class="form-section">
 
     <label>Nama Barang</label>
-    <input type="text" name="nama_barang" value="<?= $aset['nama_barang'] ?>" required>
+    <input type="text" name="nama_barang" value="<?= htmlspecialchars($aset['nama_barang']) ?>" required>
 
     <label>Deskripsi</label>
-    <textarea name="deskripsi"><?= $aset['deskripsi'] ?></textarea>
+    <textarea name="deskripsi"><?= htmlspecialchars($aset['deskripsi']) ?></textarea>
 
     <label>Jumlah Unit</label>
     <input type="number" name="jumlah_unit" value="<?= $aset['jumlah_unit'] ?>">
@@ -97,14 +108,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label>Kategori Barang</label>
     <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
-      <option value="Peralatan Kantor" <?= $aset['kategori_barang']=='Peralatan Kantor'?'selected':'' ?>>Peralatan Kantor</option>
-      <option value="Furniture" <?= $aset['kategori_barang']=='Furniture'?'selected':'' ?>>Furniture</option>
-      <option value="Peralatan Lapangan" <?= $aset['kategori_barang']=='Peralatan Lapangan'?'selected':'' ?>>Peralatan Lapangan</option>
-      <option value="Kendaraan" <?= $aset['kategori_barang']=='Kendaraan'?'selected':'' ?>>Kendaraan</option>
+      <option value="1" <?= $aset['kategori_barang']==1?'selected':'' ?>>Peralatan Kantor</option>
+      <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Furniture</option>
+      <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Peralatan Lapangan</option>
+      <option value="4" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
     </select>
 
-    <!-- Field tambahan khusus kendaraan -->
-    <div id="kendaraanFields" style="<?= ($aset['kategori_barang']=='Kendaraan') ? 'display:block;' : 'display:none;' ?>">
+    <!-- Field tambahan untuk kategori Kendaraan -->
+    <div id="kendaraanFields" style="<?= ($aset['kategori_barang']==4) ? 'display:block;' : 'display:none;' ?>">
       <label>Nomor Plat</label>
       <input type="text" name="nomor_plat" value="<?= $aset['nomor_plat'] ?>">
 
@@ -119,12 +130,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 </div>
 
-<!-- JS dinamis untuk tampil/sembunyi field kendaraan -->
 <script>
 function toggleKendaraanFields() {
   const kategori = document.getElementById('kategori_barang').value;
-  const kendaraanFields = document.getElementById('kendaraanFields');
-  kendaraanFields.style.display = (kategori === 'Kendaraan') ? 'block' : 'none';
+  document.getElementById('kendaraanFields').style.display = (kategori == 4) ? 'block' : 'none';
 }
 </script>
 
