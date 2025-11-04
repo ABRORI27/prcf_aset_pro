@@ -26,7 +26,7 @@ include '../../config/db.php';
       <?php endif; ?>
 
       <?php if (has_access(['Admin', 'Auditor'])): ?>
-        <a href="export.php" class="btn">Export Excel</a>
+        <a href="export.php" id="exportBtn" class="btn">Export Excel</a>
       <?php endif; ?>
 
       <input type="text" id="searchInput" onkeyup="filterTable('tabelAset', this.value)" placeholder="Cari aset...">
