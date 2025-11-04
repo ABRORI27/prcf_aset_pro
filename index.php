@@ -8,6 +8,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
+require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/config/init.php';  // ⬅️  include koneksi, constants, timezone, dll
 require_once __DIR__ . '/includes/header.php'; // ⬅️  sudah otomatis include auth_check
 
@@ -131,6 +132,7 @@ $pajak_due = mysqli_query($conn, "
 .card.stat {
   text-align: center;
   background: var(--bg-card, #fff);
+  color: #111;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);

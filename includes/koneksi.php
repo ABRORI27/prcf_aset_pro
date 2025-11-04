@@ -10,9 +10,4 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-if (headers_sent($file, $line)) {
-    echo "Header sudah dikirim di file $file baris $line";
-    exit;
-}
-
 ?>

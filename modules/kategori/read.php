@@ -1,6 +1,20 @@
 <?php
 include '../../includes/header.php';
 include '../../includes/koneksi.php';
+
+// Ambil filter dari URL (jika ada)
+$filter = isset($_GET['filter']) ? (int)$_GET['filter'] : 0;
+
+// Tentukan query sesuai filter
+if ($filter > 0) {
+  $query = mysqli_query($conn, "SELECT * FROM kategori_barang WHERE id = '$filter'");
+} else {
+  $query = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY id ASC");
+}
+
+if (!$query) {
+  die("Query gagal: " . mysqli_error($conn));
+}
 ?>
 
 <div class="page">
@@ -22,14 +36,6 @@ include '../../includes/koneksi.php';
       <tbody>
       <?php
         $no = 1;
-        // ✅ gunakan nama kolom yang benar: id
-        $query = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY id ASC");
-
-        // ✅ tambahkan validasi untuk cek apakah query berhasil
-        if (!$query) {
-          die("Query gagal: " . mysqli_error($conn));
-        }
-
         while ($row = mysqli_fetch_assoc($query)) {
           echo "<tr>
                   <td>{$no}</td>
@@ -41,6 +47,10 @@ include '../../includes/koneksi.php';
                   </td>
                 </tr>";
           $no++;
+        }
+
+        if (mysqli_num_rows($query) == 0) {
+          echo "<tr><td colspan='4' style='text-align:center;'>Tidak ada data kategori</td></tr>";
         }
       ?>
       </tbody>

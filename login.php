@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $pwd = trim($_POST['password']);
 
-    $stmt = $conn->prepare('SELECT id, username, password_hash, role FROM users WHERE username = ? LIMIT 1');
+    $stmt = $conn->prepare('SELECT id, username, nama_lengkap, password_hash, role FROM users WHERE username = ? LIMIT 1');
     $stmt->bind_param('s', $username);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -17,11 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($pwd, $row['password_hash'])) {
 
             // Simpan semua data user ke session
-            $_SESSION['user'] = [
-                'id' => $row['id'],
-                'username' => $row['username'],
-                'role' => $row['role']
-            ];
+          $_SESSION['user'] = [
+            'id' => $row['id'],
+            'username' => $row['username'],
+            'nama_lengkap' => $row['nama_lengkap'],
+            'role' => $row['role']
+];
+
 
             // Redirect otomatis berdasarkan role
             switch ($row['role']) {

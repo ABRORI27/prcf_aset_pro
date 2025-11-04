@@ -1,18 +1,18 @@
-// === DARK / LIGHT MODE SWITCH GLOBAL ===
+// === THEME HANDLER ===
 document.addEventListener("DOMContentLoaded", () => {
-  const modeSwitch = document.getElementById("modeSwitch");
-  const current = localStorage.getItem("theme");
+  const toggle = document.getElementById("modeSwitch");
+  const body = document.body;
 
-  if (current === "light") {
-    document.body.classList.add("light-mode");
-    if (modeSwitch) modeSwitch.checked = true;
-  }
+  // Terapkan tema tersimpan langsung saat halaman siap
+  applySavedTheme();
 
-  if (modeSwitch) {
-    modeSwitch.addEventListener("change", () => {
-      document.body.classList.toggle("light-mode");
-      const mode = document.body.classList.contains("light-mode") ? "light" : "dark";
-      localStorage.setItem("theme", mode);
+  // Event toggle theme (langsung sinkronkan ke semua elemen)
+  if (toggle) {
+    toggle.addEventListener("change", () => {
+      const isLight = toggle.checked;
+      body.classList.toggle("light-mode", isLight);
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      syncThemeToDynamicElements();
     });
   }
 
@@ -22,10 +22,63 @@ document.addEventListener("DOMContentLoaded", () => {
     if (reminder) {
       fetch("reminder.php")
         .then(res => res.text())
-        .then(html => (reminder.innerHTML = html));
+        .then(html => {
+          reminder.innerHTML = html;
+          syncThemeToDynamicElements();
+        });
     }
   }, 60000);
+
+  // Jalankan sinkronisasi awal setelah semua elemen dimuat
+  syncThemeToDynamicElements();
 });
+
+// === Terapkan tema tersimpan saat load ===
+function applySavedTheme() {
+  const theme = localStorage.getItem("theme");
+  const body = document.body;
+  const toggle = document.getElementById("modeSwitch");
+  const isLight = theme === "light";
+
+  body.classList.toggle("light-mode", isLight);
+  if (toggle) toggle.checked = isLight;
+
+  syncThemeToDynamicElements();
+}
+
+// === Sinkronkan warna untuk semua elemen dinamis ===
+function syncThemeToDynamicElements() {
+  const body = document.body;
+  const isLight = body.classList.contains("light-mode");
+
+  // Elemen yang harus ikut berubah tema
+  const elements = document.querySelectorAll(`
+    .dropdown-container, 
+    .dropdown-content, 
+    .card, 
+    .table, 
+    table, 
+    .dashboard-box, 
+    .summary-box, 
+    .info-card, 
+    .reminder-card
+  `);
+
+  elements.forEach(el => {
+    el.classList.toggle("light-mode", isLight);
+  });
+
+  // Pastikan teks selalu terlihat di kedua mode
+  document.querySelectorAll("td, th, p, h1, h2, h3, span, label").forEach(el => {
+    el.style.color = isLight ? "var(--text-dark)" : "var(--text-light)";
+  });
+
+  // Perbaikan khusus untuk box dashboard agar data langsung muncul
+  document.querySelectorAll(".dashboard-box, .card").forEach(el => {
+    el.style.backgroundColor = isLight ? "var(--panel-light)" : "var(--panel-dark)";
+    el.style.transition = "background-color 0.3s ease";
+  });
+}
 
 // === FILTER TABLE ===
 function filterTable(id, q) {
@@ -36,19 +89,12 @@ function filterTable(id, q) {
     const text = r.innerText.toLowerCase();
     r.style.display = text.includes(q) ? "" : "none";
   }
+  syncThemeToDynamicElements();
 }
 
 // === FIELD TAMBAHAN UNTUK KENDARAAN ===
 function toggleKendaraanFields() {
+  const kategori = document.getElementById("kategori_barang")?.value;
   const el = document.getElementById("kendaraanFields");
-  const val = document.getElementById("kategori_barang")?.value?.toLowerCase() || "";
-  if (!el) return;
-  el.style.display =
-    val.includes("kendaraan") || val.includes("mobil") || val.includes("motor")
-      ? "block"
-      : "none";
-}
-function toggleKendaraanFields() {
-  const kategori = document.getElementById('kategori_barang').value;
-  document.getElementById('kendaraanFields').style.display = (kategori == 4) ? 'block' : 'none';
+  if (el) el.style.display = kategori == 4 ? "block" : "none";
 }

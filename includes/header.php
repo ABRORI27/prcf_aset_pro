@@ -4,6 +4,9 @@ require_once __DIR__ . '/auth_check.php';
 
 // Cegah halaman diakses tanpa login
 require_login();
+
+// Ambil data kategori untuk dropdown
+$kategori_result = mysqli_query($conn, "SELECT id, nama_kategori FROM kategori_barang ORDER BY nama_kategori ASC");
 ?>
 
 <!doctype html>
@@ -19,6 +22,57 @@ require_login();
 
   <!-- JS -->
   <script src="<?= PATH_ASSETS ?>js/main.js" defer></script>
+
+  <style>
+    /* Tambahan minimal agar dropdown sidebar rapi */
+    .dropdown-container {
+      display: none;
+      background-color: var(--panel-light);
+      padding-left: 20px;
+      border-left: 3px solid var(--accent);
+      transition: all 0.3s ease;
+    }
+
+    body:not(.light-mode) .dropdown-container {
+      background-color: var(--panel-dark);
+      color: var(--text-dark);
+    }
+
+    .dropdown-btn {
+      cursor: pointer;
+      display: block;
+      padding: 10px 15px;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .dropdown-btn:hover {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    .dropdown-container a {
+      display: block;
+      padding: 8px 15px;
+      text-decoration: none;
+      color: var(--text-light);
+      transition: background 0.3s;
+    }
+
+    .dropdown-container a:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .arrow {
+      float: right;
+      transition: transform 0.3s;
+    }
+
+    .arrow.open {
+      transform: rotate(90deg);
+    }
+  </style>
 </head>
 
 <body>
@@ -38,7 +92,19 @@ require_login();
       <?php if (has_access([ROLE_ADMIN, ROLE_OPERATOR])): ?>
         <a href="<?= PATH_MODULES ?>aset_barang/read.php">Aset Barang</a>
         <a href="<?= PATH_MODULES ?>kendaraan/read.php">Kendaraan</a>
-        <a href="<?= PATH_MODULES ?>kategori/read.php">Kategori</a>
+
+        <!-- 🔽 Dropdown Kategori -->
+        <button class="dropdown-btn" onclick="toggleDropdown(this)">
+          Kategori <span class="arrow">▶</span>
+        </button>
+        <div class="dropdown-container">
+          <a href="<?= PATH_MODULES ?>kategori/read.php">Semua Kategori</a>
+          <?php while ($kat = mysqli_fetch_assoc($kategori_result)): ?>
+            <a href="<?= PATH_MODULES ?>kategori/read.php?filter=<?= $kat['id'] ?>">
+              <?= htmlspecialchars($kat['nama_kategori']) ?>
+            </a>
+          <?php endwhile; ?>
+        </div>
       <?php endif; ?>
 
       <?php if (has_access([ROLE_ADMIN])): ?>
@@ -52,12 +118,23 @@ require_login();
       <?php endif; ?>
 
       <a href="<?= BASE_URL ?>logout.php">
-        Logout 
-        <span class="role-label">
-          (<?= htmlspecialchars($_SESSION['user']['role'] ?? 'User') ?>)
-        </span>
-      </a>
+        Logout
+      <span class="role-label">
+        (<?= htmlspecialchars($_SESSION['user']['username'] ?? 'User') ?> - <?= htmlspecialchars($_SESSION['user']['role'] ?? '-') ?>)
+  </span>
+</a>
+
     </nav>
   </aside>
 
   <main class="main">
+
+<script>
+  // Fungsi buka/tutup dropdown sidebar
+  function toggleDropdown(btn) {
+    const dropdown = btn.nextElementSibling;
+    const arrow = btn.querySelector('.arrow');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    arrow.classList.toggle('open');
+  }
+</script>
