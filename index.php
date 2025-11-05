@@ -1,50 +1,21 @@
 <?php
-// ================================================
-//  Dashboard Aset Barang PRCF Indonesia
-//  Author: Philo
-// ================================================
-
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
 require_once __DIR__ . '/includes/koneksi.php';
-require_once __DIR__ . '/config/init.php';  // ⬅️  include koneksi, constants, timezone, dll
-require_once __DIR__ . '/includes/header.php'; // ⬅️  sudah otomatis include auth_check
+require_once __DIR__ . '/config/init.php';
+require_once __DIR__ . '/includes/header.php';
 
-// ========================
-//  QUERY DASHBOARD DATA
-// ========================
+// === QUERY DATA DASHBOARD ===
+$total_aset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM aset_barang"))['total'] ?? 0;
+$aktif_aset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM aset_barang WHERE status_penggunaan='Aktif'"))['total'] ?? 0;
+$rusak_aset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM aset_barang WHERE kondisi_barang IN ('Rusak','Hilang')"))['total'] ?? 0;
+$total_kendaraan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM kendaraan"))['total'] ?? 0;
+$notif_pending = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM notifikasi WHERE status='Belum Terkirim'"))['total'] ?? 0;
 
-// Total aset
-$total_aset = mysqli_fetch_assoc(mysqli_query($conn, "
-  SELECT COUNT(*) AS total FROM aset_barang
-"))['total'] ?? 0;
-
-// Aset aktif
-$aktif_aset = mysqli_fetch_assoc(mysqli_query($conn, "
-  SELECT COUNT(*) AS total FROM aset_barang WHERE status_penggunaan='Aktif'
-"))['total'] ?? 0;
-
-// Aset rusak / hilang
-$rusak_aset = mysqli_fetch_assoc(mysqli_query($conn, "
-  SELECT COUNT(*) AS total FROM aset_barang WHERE kondisi_barang IN ('Rusak','Hilang')
-"))['total'] ?? 0;
-
-// Total kendaraan
-$total_kendaraan = mysqli_fetch_assoc(mysqli_query($conn, "
-  SELECT COUNT(*) AS total FROM kendaraan
-"))['total'] ?? 0;
-
-// Notifikasi belum terkirim
-$notif_pending = mysqli_fetch_assoc(mysqli_query($conn, "
-  SELECT COUNT(*) AS total FROM notifikasi WHERE status='Belum Terkirim'
-"))['total'] ?? 0;
-
-// Deteksi pajak kendaraan jatuh tempo < 7 hari
 $today = date('Y-m-d');
 $limit = date('Y-m-d', strtotime('+7 days'));
-
 $pajak_due = mysqli_query($conn, "
   SELECT k.*, a.nama_barang 
   FROM kendaraan k 
@@ -54,9 +25,6 @@ $pajak_due = mysqli_query($conn, "
 ");
 ?>
 
-<!-- ========================
-      DASHBOARD CONTENT
-========================= -->
 <div class="page dashboard">
   <h2>Dashboard Aset Barang PRCF Indonesia</h2>
   <p>
@@ -74,38 +42,40 @@ $pajak_due = mysqli_query($conn, "
   </div>
 
   <!-- Reminder Pajak -->
-  <div class="card mt-4">
+  <div class="card mt-4 reminder-card">
     <h3>🚗 Pajak Kendaraan Mendekati Jatuh Tempo</h3>
-    <?php if (mysqli_num_rows($pajak_due) == 0): ?>
-      <p>Tidak ada kendaraan dengan pajak mendekati jatuh tempo dalam 7 hari ke depan.</p>
-    <?php else: ?>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nama Kendaraan</th>
-            <th>Nomor Plat</th>
-            <th>Tanggal Pajak</th>
-            <th>Penanggung Jawab</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($row = mysqli_fetch_assoc($pajak_due)):
-            $diff = (new DateTime())->diff(new DateTime($row['tanggal_pajak']))->days;
-            $color = ($diff <= 3) ? 'red' : 'yellow';
-          ?>
-          <tr>
-            <td><?= e($row['nama_barang']) ?></td>
-            <td><?= e($row['nomor_plat']) ?></td>
-            <td><span class="alert <?= $color ?>"><?= e($row['tanggal_pajak']) ?></span></td>
-            <td><?= e($row['penanggung_jawab']) ?></td>
-          </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
+    <div class="reminder-content">
+      <?php if (mysqli_num_rows($pajak_due) == 0): ?>
+        <p>Tidak ada kendaraan dengan pajak mendekati jatuh tempo dalam 7 hari ke depan.</p>
+      <?php else: ?>
+        <table class="table pajak-table">
+          <thead>
+            <tr>
+              <th>Nama Kendaraan</th>
+              <th>Nomor Plat</th>
+              <th>Tanggal Pajak</th>
+              <th>Penanggung Jawab</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php while ($row = mysqli_fetch_assoc($pajak_due)):
+              $diff = (new DateTime())->diff(new DateTime($row['tanggal_pajak']))->days;
+              $color = ($diff <= 3) ? 'red' : 'yellow';
+            ?>
+            <tr>
+              <td><?= e($row['nama_barang']) ?></td>
+              <td><?= e($row['nomor_plat']) ?></td>
+              <td><span class="alert <?= $color ?>"><?= e($row['tanggal_pajak']) ?></span></td>
+              <td><?= e($row['penanggung_jawab']) ?></td>
+            </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    </div>
   </div>
 
-  <!-- Navigasi Cepat -->
+  <!-- Navigasi Modul -->
   <div class="card mt-4">
     <h3>📂 Navigasi Modul</h3>
     <div class="module-links">
@@ -123,40 +93,119 @@ $pajak_due = mysqli_query($conn, "
           STYLE
 ========================= -->
 <style>
-.dashboard h2 { margin-bottom: .5em; }
+:root {
+  --primary: #2b6b4f;
+  --primary-dark: #1c4835;
+  --text-dark: #222;
+  --text-light: #f5f5f5;
+  --bg-dark: #1e1e1e;
+  --bg-light: #ffffff;
+  --card-dark: #2c2c2c;
+  --card-light: #ffffff;
+  --card-highlight: #fdfdfd;
+}
+
+/* GRID UTAMA */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
 }
+
 .card.stat {
   text-align: center;
-  background: var(--bg-card, #fff);
-  color: #111;
   padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  transition: 0.3s ease-in-out;
+  background: var(--card-light);
+  color: var(--text-dark);
 }
-.card.stat h3 { font-size: 2rem; margin: 0; }
+.card.stat h3 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+/* DARK MODE – semua card tetap terang */
+body.dark-mode .card.stat,
+body:not(.light-mode) .card.stat {
+  background: var(--card-highlight);
+  color: #111;
+  box-shadow: 0 3px 12px rgba(255,255,255,0.05);
+}
+
+/* Pajak & Navigasi Modul Card */
+.card {
+  background: var(--card-light);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+body.dark-mode .card,
+body:not(.light-mode) .card {
+  background: var(--card-highlight);
+  color: #111;
+}
+
+/* Tabel Pajak */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: .6rem;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+body.dark-mode .table th,
+body.dark-mode .table td {
+  border-color: #ddd;
+}
+
+/* Modul Navigasi Buttons */
 .module-links {
   display: flex;
   flex-wrap: wrap;
   gap: .75rem;
 }
 .module-links .btn {
-  background: var(--primary, #2b6b4f);
+  background: var(--primary);
   color: white;
   padding: .6em 1.2em;
-  border-radius: 6px;
+  border-radius: 8px;
   text-decoration: none;
-  transition: 0.2s;
+  transition: 0.25s;
+  font-weight: 500;
 }
 .module-links .btn:hover {
-  background: #257a52;
+  background: var(--primary-dark);
 }
-.mt-4 { margin-top: 1.5em; }
-.alert.red { background: #ff6b6b; color: white; padding: 2px 8px; border-radius: 6px; }
-.alert.yellow { background: #ffd93b; color: #222; padding: 2px 8px; border-radius: 6px; }
+
+/* Alert Colors */
+.alert.red {
+  background: #ff6b6b;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.alert.yellow {
+  background: #ffe16b;
+  color: #111;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Warna Global Background */
+body.light-mode {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+body.dark-mode,
+body:not(.light-mode) {
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+
 </style>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
