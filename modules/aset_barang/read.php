@@ -33,7 +33,7 @@ include '../../config/db.php';
     </div>
   </div>
 
-  <div class="card">
+  <div class="table-container">
     <table class="table" id="tabelAset">
       <thead>
         <tr>

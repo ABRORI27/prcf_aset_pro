@@ -9,17 +9,37 @@
   /* Dark Mode Palette */
   --bg-dark: #0f1724;
   --panel-dark: #111827;
-  --text-dark: #e6eef0;
+  /* --text-dark: #e6eef0; */
+  --text-dark: #102a23;
   --muted-dark: #9aa4b2;
   --sidebar-dark: #0b1220;
 
   /* Light Mode Palette */
   --bg-light: #f4f6f9;
   --panel-light: #ffffff;
-  --text-light: #102a23;
+  /* --text-light: #102a23; */
+  --text-light: #e6eef0;
   --muted-light: #5a5a5a;
   --sidebar-light: #f0f3f3;
 }
+
+/* :root {
+  --accent: #2b6b4f;
+
+
+  --bg-dark: #f4f6f9;
+  --panel-dark: #ffffff;
+  --text-dark: #102a23;
+  --muted-dark: #5a5a5a;
+  --sidebar-dark: #f0f3f3;
+
+  --bg-light: #0f1724;
+  --panel-light: #111827;
+  --text-light: #e6eef0;
+  --muted-light: #9aa4b2;
+  --sidebar-light: #f0f3f3;
+} */
+
 
 /* --- BASE STYLE --- */
 body {
@@ -115,7 +135,8 @@ body.light-mode .sidebar nav a {
 }
 body.light-mode .sidebar nav a:hover {
   background-color: #e6ecea;
-  color: var(--text-light);
+  /* background-color: var(--accent); */
+  color: var(--text-dark);
 }
 
 /* --- TOGGLE SWITCH --- */
@@ -291,7 +312,7 @@ body.light-mode .form-section select,
 body.light-mode .form-section textarea {
   background: #fff;
   border: 1px solid #ccc;
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 /* Table Styling */
@@ -345,7 +366,7 @@ body.light-mode .table tr:hover {
 /* Login/Register Box */
 .login-box {
   background: var(--panel-dark);
-  color: var(--text-dark);
+  color: var(--text-light);
   max-width: 400px;
   margin: 80px auto;
   padding: 30px;
