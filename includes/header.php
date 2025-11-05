@@ -45,10 +45,11 @@ $kategori_result = mysqli_query($conn, "SELECT id, nama_kategori FROM kategori_b
       color: var(--text-light);
       text-decoration: none;
       transition: background 0.3s ease;
+      background-color: var(--accent);
     }
 
     .dropdown-btn:hover {
-      background-color: var(--accent);
+      background-color: #102a23;
       color: #fff;
     }
 
