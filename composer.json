@@ -1,0 +1,15 @@
+{
+    "name": "user/prcf_aset_pro",
+    "autoload": {
+        "psr-4": {
+            "User\\PrcfAsetPro\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Anas Anji Abrori",
+            "email": "anasanji27@gmail.com"
+        }
+    ],
+    "require": {}
+}

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRCF Indonesia - Sistem Aset & HR</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/img/logo.png">
+<style>
+  :root {
+    --green-primary: #204c37;
+    --green-accent: #2b6b4f;
+    --light-bg: #f6f9f7;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    color: #222;
+    background: #ffffff;
+  }
+
+  /* HEADER */
+  header.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  header .logo {
+    height: 60px;
+    width: auto;
+  }
+
+  nav.topnav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  nav.topnav a {
+    text-decoration: none;
+    color: var(--green-primary);
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+
+  nav.topnav a:hover {
+    color: var(--green-accent);
+  }
+
+  /* HERO */
+  main.hero {
+    text-align: center;
+    padding: 330px 20px 330px;
+    background: linear-gradient(180deg, #f8fbf9, #ffffff);
+  }
+
+  main.hero h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--green-primary);
+    margin-bottom: 10px;
+  }
+
+  main.hero p {
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .cta-buttons a {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.25s ease;
+  }
+
+  .cta-buttons .btn-primary {
+    background: var(--green-primary);
+    color: #fff;
+  }
+
+  .cta-buttons .btn-primary:hover {
+    background: var(--green-accent);
+  }
+
+  .cta-buttons .btn-outline {
+    border: 2px solid var(--green-primary);
+    color: var(--green-primary);
+  }
+
+  .cta-buttons .btn-outline:hover {
+    background: var(--green-primary);
+    color: #fff;
+  }
+
+  /* FEATURE GRID */
+  section.features {
+    background: var(--light-bg);
+    padding: 80px 30px;
+    text-align: center;
+  }
+
+  section.features h2 {
+    font-size: 1.8rem;
+    color: var(--green-primary);
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  .feature-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform .25s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .feature-card h3 {
+    color: var(--green-primary);
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 20px;
+    background: var(--light-bg);
+    border-top: 1px solid #e0e0e0;
+    color: var(--green-primary);
+    font-size: 14px;
+  }
+
+  footer.site-footer a {
+    color: var(--green-accent);
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <img src="assets/img/logo.png" alt="PRCF Indonesia" class="logo">
+    <nav class="topnav">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.php">About</a>
+      <!-- <a href="modules/aset_barang/read.php">Aset</a>
+      <a href="modules/kendaraan/read.php">Kendaraan</a> -->
+      <a href="login.php">Login</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main class="hero">
+    <h1>PRCF Indonesia Internal Management System</h1>
+    <p>Sistem digital untuk memantau dan mengelola seluruh aset, kendaraan, program, dan aktivitas internal PRCF Indonesia secara efisien dan transparan.</p>
+
+    <div class="cta-buttons">
+      <a href="login.php" class="btn-primary">Masuk ke Sistem</a>
+      <a href="about.php" class="btn-outline">Pelajari Lebih Lanjut</a>
+    </div>
+  </main>
+
+  <!-- FEATURE SECTION -->
+  <section class="features">
+    <h2>Fitur Utama Sistem Aset & HR PRCF</h2>
+    <div class="grid">
+      <div class="feature-card">
+        <h3>📦 Manajemen Aset</h3>
+        <p>Mengelola data seluruh aset PRCF — termasuk kondisi, lokasi, dan status penggunaan.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🚗 Kendaraan & Pajak</h3>
+        <p>Monitor pajak kendaraan dan jadwal perawatan dengan notifikasi otomatis sebelum jatuh tempo.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🏠 Lokasi & Penanggung Jawab</h3>
+        <p>Kelola lokasi fisik aset dan PIC (penanggung jawab) untuk setiap unit atau site.</p>
+      </div>
+      <div class="feature-card">
+        <h3>💰 Program Pendanaan</h3>
+        <p>Pantau sumber pendanaan setiap aset, tahun anggaran, dan detail program PRCF.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔔 Notifikasi Otomatis</h3>
+        <p>Dapatkan pengingat untuk pajak kendaraan, audit, dan jadwal perawatan secara real-time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    © <?= date('Y') ?> PRCF Indonesia | 
+    <a href="https://prcfindonesia.org" target="_blank">Official Website</a>
+  </footer>
+</body>
+</html>
