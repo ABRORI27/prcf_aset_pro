@@ -31,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: index.php');
                     break;
                 case 'Operator':
-                    header('Location: modules/aset/output_aset.php');
+                    header('Location: modules/aset_barang/read.php');
                     break;
                 case 'Auditor':
-                    header('Location: modules/aset/export_excel.php');
+                    header('Location: modules/aset_barang/export.php');
                     break;
                 default:
                     header('Location: index.php');
