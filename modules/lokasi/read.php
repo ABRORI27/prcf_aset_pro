@@ -17,7 +17,7 @@ include '../../includes/koneksi.php';
           <th>Nama Lokasi</th>
           <th>Alamat</th>
           <th>Penanggung Jawab</th>
-          <th>Barang Tersimpan</th>
+          <!-- <th>Barang Tersimpan</th> -->
           <th>Aksi</th>
         </tr>
       </thead>
@@ -50,12 +50,12 @@ include '../../includes/koneksi.php';
                     <td>{$row['alamat']}</td>
                     <td>{$row['penanggung_jawab']}</td>
                     <td>";
-            if ($row['total_barang'] > 0) {
-              echo "<span class='badge green'>{$row['total_barang']} barang</span><br>
-                    <small>" . htmlspecialchars($row['daftar_barang']) . "</small>";
-            } else {
-              echo "<span class='badge gray'>Belum ada barang</span>";
-            }
+            // if ($row['total_barang'] > 0) {
+            //   echo "<span class='badge green'>{$row['total_barang']} barang</span><br>
+            //         <small>" . htmlspecialchars($row['daftar_barang']) . "</small>";
+            // } else {
+            //   echo "<span class='badge gray'>Belum ada barang</span>";
+            // }
             echo "</td>
                     <td>
                       <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
