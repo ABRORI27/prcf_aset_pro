@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($stmt->execute()) {
-      echo "<script>alert('✅ Data aset berhasil ditambahkan!'); window.location='output_aset.php';</script>";
+      echo "<script>alert('✅ Data aset berhasil ditambahkan!'); window.location='read.php';</script>";
       exit;
     } else {
       echo "<div class='alert red'>❌ Gagal menambah data: " . $stmt->error . "</div>";
