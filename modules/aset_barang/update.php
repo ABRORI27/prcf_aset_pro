@@ -124,6 +124,7 @@ if ($nomor_seri === null) {
       <option value="Baik" <?= $aset['kondisi_barang']=='Baik'?'selected':'' ?>>Baik</option>
       <option value="Rusak" <?= $aset['kondisi_barang']=='Rusak'?'selected':'' ?>>Rusak</option>
       <option value="Hilang" <?= $aset['kondisi_barang']=='Hilang'?'selected':'' ?>>Hilang</option>
+      <option value="Habis masa pakai" <?= $aset['kondisi_barang']=='Habis masa pakai'?'selected':'' ?>>Habis masa pakai</option>
     </select>
 
     <label>Kode Penomoran</label>

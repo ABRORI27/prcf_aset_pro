@@ -54,36 +54,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultUrut = $queryUrut->get_result()->fetch_assoc();
     $nomor_urut_barang = ($resultUrut['max_urut'] ?? 0) + 1;
 
-    // --- Query insert ---
-    $sql = "INSERT INTO aset_barang 
-      (nama_barang, deskripsi, jumlah_unit, nomor_seri, nomor_urut_barang, harga_pembelian, waktu_perolehan, kondisi_barang, kode_penomoran, kategori_barang, nomor_plat, program_pendanaan, lokasi_barang, user_input, foto_barang, status_penggunaan, tanggal_pajak, penanggung_jawab, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    // --- Query INSERT (18 kolom bind_param) ---
+    $sql = "INSERT INTO aset_barang (
+      nama_barang, deskripsi, jumlah_unit, nomor_seri, nomor_urut_barang, 
+      harga_pembelian, waktu_perolehan, kondisi_barang, kode_penomoran, 
+      kategori_barang, nomor_plat, program_pendanaan, lokasi_barang, 
+      user_input, foto_barang, status_penggunaan, tanggal_pajak, penanggung_jawab
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
-      die("<div class='alert red'>❌ Query prepare gagal: " . $conn->error . "</div>");
+      echo "<div class='alert red'>❌ Gagal menyiapkan query: " . $conn->error . "</div>";
+      exit;
     }
 
     $stmt->bind_param(
-      "ssissi ssssissiiisss",
-      $nama_barang,
-      $deskripsi,
-      $jumlah_unit,
-      $nomor_seri,
-      $nomor_urut_barang,
-      $harga_pembelian,
-      $waktu_perolehan,
-      $kondisi_barang,
-      $kode_penomoran,
-      $kategori_barang,
-      $nomor_plat,
-      $program_pendanaan,
-      $lokasi_barang,
-      $user_input,
-      $foto_barang,
-      $status_penggunaan,
-      $tanggal_pajak,
-      $penanggung_jawab
+      "ssissdssssissiiiss",
+      $nama_barang,        // s
+      $deskripsi,          // s
+      $jumlah_unit,        // i
+      $nomor_seri,         // s
+      $nomor_urut_barang,  // i
+      $harga_pembelian,    // d
+      $waktu_perolehan,    // s
+      $kondisi_barang,     // s
+      $kode_penomoran,     // s
+      $kategori_barang,    // i
+      $nomor_plat,         // s
+      $program_pendanaan,  // i
+      $lokasi_barang,      // i
+      $user_input,         // i
+      $foto_barang,        // s
+      $status_penggunaan,  // s
+      $tanggal_pajak,      // s
+      $penanggung_jawab    // s
     );
 
     if ($stmt->execute()) {
@@ -126,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <option value="Baik">Baik</option>
       <option value="Rusak">Rusak</option>
       <option value="Hilang">Hilang</option>
+      <option value="Habis masa pakai">Habis masa pakai</option>
     </select>
 
     <label>Kode Penomoran</label>
