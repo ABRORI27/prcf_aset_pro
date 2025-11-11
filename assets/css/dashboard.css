@@ -374,8 +374,8 @@ body.light-mode .table tr:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 body.light-mode .login-box {
-  background: var(--panel-light);
-  color: var(--text-light);
+  background: var(--panel-dark);
+  color: var(--text-dark);
 }
 .login-box h2 {
   text-align: center;
@@ -393,7 +393,7 @@ body.light-mode .login-box {
   border-radius: 6px;
   border: 1px solid #23303a;
   background: #0b1220;
-  color: var(--text-dark);
+  color: var(--text-light);
 }
 body.light-mode .login-box input {
   background: #fff;
