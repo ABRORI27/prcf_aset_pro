@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // 2️⃣ Update aset_barang dengan lokasi_id + kategori_id
       $kategori_id = 4; // contoh: kategori kendaraan
       $update_aset = "UPDATE aset_barang 
-                      SET lokasi_id = '$lokasi_id', kategori_id = '$kategori_id' 
+                      SET lokasi_barang = '$lokasi_id', kategori_barang = '$kategori_id' 
                       WHERE id = '$aset_id'";
 
       if (mysqli_query($conn, $update_aset)) {
