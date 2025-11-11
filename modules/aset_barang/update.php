@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $deskripsi = $_POST['deskripsi'];
   $jumlah_unit = $_POST['jumlah_unit'];
   $nomor_seri = $_POST['nomor_seri'];
+  $nomor_urut_barang = $_POST['nomor_urut_barang']; // 🆕 ambil input nomor urut
   $harga_pembelian = $_POST['harga_pembelian'];
   $waktu_perolehan = $_POST['waktu_perolehan'];
   $lokasi_barang = $_POST['lokasi_barang'];
@@ -42,22 +43,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $penanggung_jawab = null;
   }
 
+  // ✅ Tambahkan nomor_urut_barang ke dalam query
   $stmtUpdate = $conn->prepare("
     UPDATE aset_barang SET 
       nama_barang = ?, deskripsi = ?, jumlah_unit = ?, nomor_seri = ?, 
-      harga_pembelian = ?, waktu_perolehan = ?, lokasi_barang = ?, 
+      nomor_urut_barang = ?, harga_pembelian = ?, waktu_perolehan = ?, lokasi_barang = ?, 
       kondisi_barang = ?, kode_penomoran = ?, program_pendanaan = ?, 
       kategori_barang = ?, nomor_plat = ?, tanggal_pajak = ?, penanggung_jawab = ?
     WHERE id = ?
   ");
 
+  // ✅ Tambahkan satu tipe data dan variabel di bind_param
+// Pastikan nomor_seri null jika dikosongkan
+$nomor_seri = trim($_POST['nomor_seri']);
+if ($nomor_seri === '') {
+  $nomor_seri = null;
+}
+
+// Siapkan variabel null untuk bind_param jika diperlukan
+$null_value = null;
+
+if ($nomor_seri === null) {
   $stmtUpdate->bind_param(
-    "ssississsissssi",
-    $nama_barang, $deskripsi, $jumlah_unit, $nomor_seri, 
-    $harga_pembelian, $waktu_perolehan, $lokasi_barang, 
-    $kondisi_barang, $kode_penomoran, $program_pendanaan, 
+    "ssississssissssi",
+    $nama_barang, $deskripsi, $jumlah_unit, $null_value,
+    $nomor_urut_barang, $harga_pembelian, $waktu_perolehan, $lokasi_barang,
+    $kondisi_barang, $kode_penomoran, $program_pendanaan,
     $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab, $id
   );
+} else {
+  $stmtUpdate->bind_param(
+    "ssississssissssi",
+    $nama_barang, $deskripsi, $jumlah_unit, $nomor_seri,
+    $nomor_urut_barang, $harga_pembelian, $waktu_perolehan, $lokasi_barang,
+    $kondisi_barang, $kode_penomoran, $program_pendanaan,
+    $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab, $id
+  );
+}
+
 
   if ($stmtUpdate->execute()) {
     echo "<script>alert('✅ Data aset berhasil diperbarui!');window.location='read.php';</script>";
@@ -83,6 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label>Nomor Seri</label>
     <input type="text" name="nomor_seri" value="<?= $aset['nomor_seri'] ?>">
+
+    <label>No Urut Barang</label>
+    <input type="text" name="nomor_urut_barang" value="<?= $aset['nomor_urut_barang'] ?>">
 
     <label>Harga Pembelian</label>
     <input type="number" name="harga_pembelian" value="<?= $aset['harga_pembelian'] ?>">
