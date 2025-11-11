@@ -142,19 +142,34 @@ if (in_array($namaKategori, ['furniture', 'peralatan kantor'])) {
     <label>Kode Penomoran</label>
     <input type="text" name="kode_penomoran">
 
-    <label>Kategori Barang <span style="color:red">*</span></label>
-    <select name="kategori_barang" id="kategori_barang" required onchange="toggleKendaraanFields()">
+        <label>Kategori Barang <span style="color:red">*</span></label>
+    <select name="kategori_barang" id="kategori_barang" required onchange="toggleSubKategori()">
       <option value="">-- Pilih Kategori --</option>
       <?php while ($row = $kategoriList->fetch_assoc()): ?>
-        <option value="<?= $row['id']; ?>"><?= htmlspecialchars($row['nama_kategori']); ?></option>
+        <?php if ($row['nama_kategori'] != 'Kendaraan'): // 🚫 Kendaraan disembunyikan ?>
+          <option value="<?= $row['id']; ?>"><?= htmlspecialchars($row['nama_kategori']); ?></option>
+        <?php endif; ?>
       <?php endwhile; ?>
     </select>
 
+    <!-- Subkategori khusus Peralatan Lapangan -->
+    <div id="subKategoriLapangan" style="display:none; margin-top:10px;">
+      <label>Sub Kategori Peralatan Lapangan</label>
+      <select name="sub_kategori_lapangan" id="sub_kategori_lapangan" onchange="toggleKendaraanFields()">
+        <option value="">-- Pilih Sub Kategori --</option>
+        <option value="kendaraan">Kendaraan Lapangan</option>
+        <option value="non">Non-Kendaraan Lapangan</option>
+      </select>
+    </div>
+
+    <!-- Field tambahan untuk kategori kendaraan -->
     <div id="kendaraanFields" style="display:none;">
       <label>Nomor Plat</label>
       <input type="text" name="nomor_plat">
+
       <label>Tanggal Pajak Berlaku Sampai</label>
       <input type="date" name="tanggal_pajak">
+
       <label>Penanggung Jawab</label>
       <input type="text" name="penanggung_jawab">
     </div>
@@ -166,6 +181,7 @@ if (in_array($namaKategori, ['furniture', 'peralatan kantor'])) {
         <option value="<?= $row['id']; ?>"><?= htmlspecialchars($row['nama_program']); ?></option>
       <?php endwhile; ?>
     </select>
+
 
     <label>Lokasi Barang <span style="color:red">*</span></label>
     <select name="lokasi_barang" required>
