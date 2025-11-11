@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $lokasi_barang = $_POST['lokasi_barang'];
   $kondisi_barang = $_POST['kondisi_barang'];
   $kode_penomoran = $_POST['kode_penomoran'];
-  $program_pendanaan = $_POST['program_pendanaan'];
+  $program_pendanaan = !empty($_POST['program_pendanaan']) ? $_POST['program_pendanaan'] : null;
   $kategori_barang = $_POST['kategori_barang']; // ID kategori
   $nomor_plat = $_POST['nomor_plat'] ?? null;
   $tanggal_pajak = $_POST['tanggal_pajak'] ?? null;
@@ -132,7 +132,17 @@ if ($nomor_seri === null) {
     <input type="text" name="kode_penomoran" value="<?= $aset['kode_penomoran'] ?>">
 
     <label>Program Pendanaan</label>
-    <input type="text" name="program_pendanaan" value="<?= $aset['program_pendanaan'] ?>">
+<select name="program_pendanaan">
+  <option value="">-- Pilih Program --</option>
+  <?php
+  $programList = $conn->query("SELECT id, nama_program FROM program_pendanaan ORDER BY nama_program ASC");
+  while ($p = $programList->fetch_assoc()) {
+    $selected = ($aset['program_pendanaan'] == $p['id']) ? 'selected' : '';
+    echo "<option value='{$p['id']}' $selected>{$p['nama_program']}</option>";
+  }
+  ?>
+</select>
+
 
     <label>Kategori Barang</label>
     <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
