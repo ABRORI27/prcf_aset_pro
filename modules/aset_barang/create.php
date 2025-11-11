@@ -37,15 +37,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($nama_barang) || empty($jumlah_unit) || empty($kategori_barang) || empty($lokasi_barang)) {
     echo "<div class='alert red'>⚠️ Harap isi semua field wajib!</div>";
   } else {
-    // --- Atur aturan khusus nomor seri ---
-    if ($namaKategori !== 'furniture') {
-      if (empty($nomor_seri)) {
-        echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Furniture!</div>";
-        exit;
-      }
-    } else {
-      $nomor_seri = !empty($nomor_seri) ? $nomor_seri : null;
-    }
+// --- Atur aturan khusus nomor seri ---
+if (in_array($namaKategori, ['furniture', 'peralatan kantor'])) {
+  // furniture dan peralatan kantor boleh kosong nomor seri
+  if (empty($nomor_seri)) {
+    $nomor_seri = null;
+  }
+} else {
+  // kategori lain wajib isi nomor seri
+  if (empty($nomor_seri)) {
+    echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Furniture dan Peralatan Kantor!</div>";
+    exit;
+  }
+}
+
 
     // --- Tentukan nomor urut barang otomatis ---
     $queryUrut = $conn->prepare("SELECT MAX(nomor_urut_barang) AS max_urut FROM aset_barang WHERE nama_barang = ?");
