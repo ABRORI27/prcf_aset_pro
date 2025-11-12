@@ -37,19 +37,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($nama_barang) || empty($jumlah_unit) || empty($kategori_barang) || empty($lokasi_barang)) {
     echo "<div class='alert red'>⚠️ Harap isi semua field wajib!</div>";
   } else {
-// --- Atur aturan khusus nomor seri ---
-if (in_array($namaKategori, ['furniture', 'peralatan kantor'])) {
-  // furniture dan peralatan kantor boleh kosong nomor seri
+// --- Atur aturan khusus nomor seri (pengecualian kategori tertentu) ---
+$kategoriBolehKosong = ['furniture kantor', 'peralatan kantor', 'fire equipment', 'field equipment'];
+
+$namaKategoriLower = strtolower(trim($namaKategori));
+
+if (in_array($namaKategoriLower, $kategoriBolehKosong)) {
+  // kategori tertentu boleh kosong nomor seri
   if (empty($nomor_seri)) {
     $nomor_seri = null;
   }
 } else {
   // kategori lain wajib isi nomor seri
   if (empty($nomor_seri)) {
-    echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Furniture dan Peralatan Kantor!</div>";
+    echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Furniture Kantor, Peralatan Kantor, Field Equipment, dan Fire Equipment!</div>";
     exit;
   }
 }
+
 
 
     // --- Tentukan nomor urut barang otomatis ---
@@ -119,7 +124,7 @@ if (in_array($namaKategori, ['furniture', 'peralatan kantor'])) {
     <input type="number" name="jumlah_unit" min="1" value="1" required>
 
     <label>Nomor Seri</label>
-    <input type="text" name="nomor_seri" placeholder="(Kosongkan jika kategori Furniture)">
+    <input type="text" name="nomor_seri" placeholder="(Kosongkan jika kategori Furniture, Peralatan Kantor, Fire Equipment, atau Field Equipment)">
 
     <label>Nomor Urut Barang (otomatis)</label>
     <input type="text" name="nomor_urut_barang" readonly placeholder="Akan diisi otomatis">
