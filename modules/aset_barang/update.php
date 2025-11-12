@@ -110,7 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Rusak-kaki kursi patah">Rusak-kaki kursi patah</option>
             <option value="Hilang" <?= $aset['kondisi_barang']=='Hilang'?'selected':'' ?>>Hilang</option>
             <option value="Rusak-Habis Masa Pakai" <?= $aset['kondisi_barang']=='Rusak-Habis Masa Pakai'?'selected':'' ?>>Rusak-Habis Masa Pakai</option>
-            <option value="Sedang Diservis" <?= $aset['kondisi_barang']=='Rusak-Sedang Diservis'?'selected':'' ?>>Rusak-Sedang Diservis</option>
+            <option value="Rusak-Sedang Diservis" <?= $aset['kondisi_barang']=='Rusak-Sedang Diservis'?'selected':'' ?>>Rusak-Sedang Diservis</option>
+            <option value="Kurang baik-Perlu diservis" <?= $aset['kondisi_barang']=='Kurang baik-Perlu diservis'?'selected':'' ?>>Kurang baik-Perlu diservis</option>
         </select>
 
         <label>Kode Barang</label>

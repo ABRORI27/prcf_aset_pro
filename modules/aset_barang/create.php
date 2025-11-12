@@ -134,6 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <option value="Hilang">Hilang</option>
       <option value="Rusak-Habis Masa Pakai">Rusak-Habis Masa Pakai</option>
       <option value="Rusak-Sedang diservis">Rusak-Sedang diservis</option>
+      <option value="Kurang baik-Perlu diservis">Kurang baik-Perlu diservis</option>
     </select>
 
     <label>Kode Barang</label>
