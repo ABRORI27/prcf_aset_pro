@@ -128,12 +128,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label>Kategori Barang</label>
         <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
-            <option value="1" <?= $aset['kategori_barang']==1?'selected':'' ?>>Peralatan Kantor</option>
-            <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Furniture</option>
-            <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Peralatan Lapangan / Non-Kendaraan</option>
+            <option value="1" <?= $aset['kategori_barang']==1?'selected':'' ?>>Office Furniture</option>
+            <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Furniture Kantor</option>
+            <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Field Equipment (Non-Kendaraan)</option>
             <option value="4" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
             <option value="5" <?= $aset['kategori_barang']==5?'selected':'' ?>>Field Equipment (Kendaraan)</option>
-            <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Pemadam Kebakaran</option>
+            <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Fire Equipment</option>
+            <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Office Equipment</option>
         </select>
 
         <!-- Field tambahan Kendaraan / Field Equipment -->

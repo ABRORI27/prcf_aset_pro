@@ -32,8 +32,8 @@ if (!$query) {
 $data = [];
 while ($row = mysqli_fetch_assoc($query)) {
   $data[$row['kategori_barang']]['nama_kategori'] = $row['nama_kategori'];
-  $data[$row['kategori_barang']]['deskripsi'] = $row['deskripsi'];
   $data[$row['kategori_barang']]['barang'][] = $row['nama_barang'] ?: "-";
+  $data[$row['kategori_barang']]['deskripsi'] = $row['deskripsi'];
 }
 ?>
 
@@ -49,8 +49,8 @@ while ($row = mysqli_fetch_assoc($query)) {
         <tr>
           <th>No</th>
           <th>Nama Kategori</th>
-          <th>Deskripsi</th>
           <th>Nama Barang / Aset</th>
+          <th>Deskripsi</th>
           <th>Aksi</th>
         </tr>
       </thead>
@@ -62,22 +62,22 @@ while ($row = mysqli_fetch_assoc($query)) {
           echo "<tr>
                   <td>{$no}</td>
                   <td>{$kategori['nama_kategori']}</td>
-                  <td>{$kategori['deskripsi']}</td>
                   <td>";
-
-          // tampilkan semua barang di kategori ini
-          if (!empty($kategori['barang'])) {
-            echo "<ul style='margin:0; padding-left:18px;'>";
-            foreach ($kategori['barang'] as $barang) {
-              echo "<li>{$barang}</li>";
-            }
-            echo "</ul>";
-          } else {
-            echo "-";
-          }
-
-          echo "</td>
-                <td>
+                  
+                  // tampilkan semua barang di kategori ini
+                  if (!empty($kategori['barang'])) {
+                    echo "<ul style='margin:0; padding-left:18px;'>";
+                    foreach ($kategori['barang'] as $barang) {
+                      echo "<li>{$barang}</li>";
+                    }
+                    echo "</ul>";
+                  } else {
+                    echo "-";
+                  }
+                  
+                  echo "</td>
+                  <td>{$kategori['deskripsi']}</td>
+                  <td>
                   <a href='update.php?id={$id}' class='btn'>Edit</a>
                   <a href='delete.php?id={$id}' class='btn red' onclick='return confirm(\"Hapus kategori ini?\")'>Hapus</a>
                 </td>

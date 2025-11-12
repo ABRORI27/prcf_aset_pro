@@ -37,23 +37,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($nama_barang) || empty($jumlah_unit) || empty($kategori_barang) || empty($lokasi_barang)) {
     echo "<div class='alert red'>⚠️ Harap isi semua field wajib!</div>";
   } else {
-// --- Atur aturan khusus nomor seri (pengecualian kategori tertentu) ---
-$kategoriBolehKosong = ['furniture kantor', 'peralatan kantor', 'fire equipment', 'field equipment'];
 
+// --- Atur aturan khusus nomor seri (pengecualian kategori tertentu) ---
 $namaKategoriLower = strtolower(trim($namaKategori));
 
-if (in_array($namaKategoriLower, $kategoriBolehKosong)) {
-  // kategori tertentu boleh kosong nomor seri
-  if (empty($nomor_seri)) {
-    $nomor_seri = null;
-  }
+// Cek apakah kategori termasuk pengecualian (tanpa peduli variasi nama)
+if (
+    str_contains($namaKategoriLower, 'furniture') ||
+    str_contains($namaKategoriLower, 'office equipment') ||
+    str_contains($namaKategoriLower, 'fire equipment') ||
+    str_contains($namaKategoriLower, 'field equipment (non')
+) {
+    // kategori tertentu boleh kosong nomor seri
+    if (empty($nomor_seri)) {
+        $nomor_seri = null;
+    }
 } else {
-  // kategori lain wajib isi nomor seri
-  if (empty($nomor_seri)) {
-    echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Furniture Kantor, Peralatan Kantor, Field Equipment, dan Fire Equipment!</div>";
-    exit;
-  }
+    // kategori lain wajib isi nomor seri
+    if (empty($nomor_seri)) {
+        echo "<div class='alert red'>⚠️ Nomor seri wajib diisi untuk kategori selain Office Furniture, Furniture Kantor, Office Equipment, Field Equipment (Non-Kendaraan), dan Fire Equipment!</div>";
+        exit;
+    }
 }
+
 
 
 
@@ -100,12 +106,47 @@ if (in_array($namaKategoriLower, $kategoriBolehKosong)) {
       $penanggung_jawab    // s
     );
 
-    if ($stmt->execute()) {
-      echo "<script>alert('✅ Data aset berhasil ditambahkan!'); window.location='read.php';</script>";
-      exit;
-    } else {
-      echo "<div class='alert red'>❌ Gagal menambah data: " . $stmt->error . "</div>";
-    }
+if ($stmt->execute()) {
+  // --- Ambil ID aset yang baru saja dimasukkan ---
+  $aset_id = $conn->insert_id;
+
+  // --- Cek apakah kategori adalah kendaraan atau subkategori kendaraan lapangan ---
+  $isKendaraan = false;
+
+  // Cek dari nama kategori utama
+  if (str_contains($namaKategoriLower, 'kendaraan')) {
+      $isKendaraan = true;
+  }
+
+  // Cek juga jika sub_kategori_lapangan dipilih 'kendaraan'
+  if (isset($_POST['sub_kategori_lapangan']) && $_POST['sub_kategori_lapangan'] === 'kendaraan') {
+      $isKendaraan = true;
+  }
+
+  // --- Jika aset termasuk kendaraan, otomatis insert ke tabel kendaraan ---
+  if ($isKendaraan) {
+      $insertKendaraan = $conn->prepare("
+        INSERT INTO kendaraan (aset_id, nomor_seri, nomor_plat, tanggal_pajak, penanggung_jawab)
+        VALUES (?, ?, ?, ?, ?)
+      ");
+      $insertKendaraan->bind_param(
+        "issss",
+        $aset_id,
+        $nomor_seri,
+        $nomor_plat,
+        $tanggal_pajak,
+        $penanggung_jawab
+      );
+      $insertKendaraan->execute();
+  }
+
+  // --- Tampilkan notifikasi sukses dan kembali ke halaman daftar aset ---
+  echo "<script>alert('✅ Data aset berhasil ditambahkan!'); window.location='read.php';</script>";
+  exit;
+} else {
+  echo "<div class='alert red'>❌ Gagal menambah data: " . $stmt->error . "</div>";
+}
+
   }
 }
 ?>
@@ -124,7 +165,7 @@ if (in_array($namaKategoriLower, $kategoriBolehKosong)) {
     <input type="number" name="jumlah_unit" min="1" value="1" required>
 
     <label>Nomor Seri</label>
-    <input type="text" name="nomor_seri" placeholder="(Kosongkan jika kategori Furniture, Peralatan Kantor, Fire Equipment, atau Field Equipment)">
+    <input type="text" name="nomor_seri" placeholder="(Kosongkan jika kategori Office Furniture, Peralatan Kantor, Fire Equipment, atau Field Equipment)">
 
     <label>Nomor Urut Barang (otomatis)</label>
     <input type="text" name="nomor_urut_barang" readonly placeholder="Akan diisi otomatis">
