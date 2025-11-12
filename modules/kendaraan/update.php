@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 $err = '';
 $nomor_seri = $_GET['nomor_seri'] ?? null;

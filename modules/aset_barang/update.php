@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 // Ambil ID dari URL
 $id = $_GET['id'] ?? null;

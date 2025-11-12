@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 // Ambil filter dari URL (jika ada)
 $filter = isset($_GET['filter']) ? (int)$_GET['filter'] : 0;

@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $nama = trim($_POST['nama_kategori']);

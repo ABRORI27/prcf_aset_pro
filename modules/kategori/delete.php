@@ -1,5 +1,5 @@
 <?php
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 // Pastikan ada parameter ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

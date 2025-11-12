@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 // --- Ambil data dropdown ---
 $kategoriList = $conn->query("SELECT id, nama_kategori FROM kategori_barang ORDER BY nama_kategori ASC");

@@ -1,6 +1,6 @@
 <?php
 include '../../includes/header.php';
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 
 // Ambil daftar aset dari tabel aset_barang untuk dropdown
 $aset_result = mysqli_query($conn, "SELECT id, nama_barang FROM aset_barang ORDER BY id ASC");

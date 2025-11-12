@@ -1,5 +1,5 @@
 <?php
-include '../../includes/koneksi.php';
+include '../../config/db.php';
 include '../../includes/auth_check.php';
 
 
