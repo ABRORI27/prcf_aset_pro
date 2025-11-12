@@ -428,6 +428,23 @@ body.light-mode .login-box input {
   background: #7a1712;
 }
 
+.aksi-ikon {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.icon-btn {
+  text-decoration: none;
+  margin: 0 4px;
+  font-size: 1.2em;
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
 /* ===============================
     END OF DASHBOARD.CSS
    =============================== */

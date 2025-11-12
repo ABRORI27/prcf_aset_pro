@@ -48,8 +48,8 @@ $result = mysqli_query($conn, $query);
             <td><?= $row['tanggal_pajak'] ? date('d-m-Y', strtotime($row['tanggal_pajak'])) : '-' ?></td>
             <td><?= htmlspecialchars($row['penanggung_jawab'] ?? '-') ?></td>
             <td>
-              <a href="update.php?nomor_seri=<?= $row['nomor_seri'] ?>" class="btn-edit">Edit</a>
-              <a href="delete.php?nomor_seri=<?= $row['nomor_seri'] ?>" class="btn-delete" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
+              <a href="update.php?nomor_seri=<?= $row['nomor_seri'] ?>" class="btn-edit">✏️</a>
+              <a href="delete.php?nomor_seri=<?= $row['nomor_seri'] ?>" class="btn-delete" onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️</a>
             </td>
           </tr>
         <?php endwhile; ?>  

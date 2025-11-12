@@ -31,8 +31,8 @@ include '../../config/db.php';
                   <td>{$row['tahun_anggaran']}</td>
                   <td>{$row['keterangan']}</td>
                   <td>
-                    <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
-                    <a href='delete.php?id={$row['id']}' class='btn red' onclick='return confirm(\"Hapus program ini?\")'>Hapus</a>
+                  <a href='update.php?id={$row['id']}' class='icon-btn' title='Edit'>✏️</a>
+                  <a href='delete.php?id={$row['id']}' class='icon-btn' title='Hapus' onclick='return confirm(\"Yakin hapus program ini?\")'>🗑️</a>
                   </td>
                 </tr>";
           $no++;

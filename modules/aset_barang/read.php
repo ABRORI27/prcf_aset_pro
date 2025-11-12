@@ -47,49 +47,57 @@ include '../../config/db.php';
         </tr>
       </thead>
       <tbody>
-      <?php
-        $no = 1;
-        // 🔹 Gunakan JOIN agar menampilkan nama kategori, lokasi, dan program
-        $query = "
-          SELECT ab.*,
-                k.nama_kategori,
-                l.nama_lokasi,
-                p.nama_program
-          FROM aset_barang ab
-          LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
-          LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
-          LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
-          ORDER BY ab.id DESC
-        ";
-        $result = mysqli_query($conn, $query);
+<?php
+$no = 1;
+$query = "
+  SELECT ab.*,
+        k.nama_kategori,
+        l.nama_lokasi,
+        p.nama_program
+  FROM aset_barang ab
+  LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
+  LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
+  LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
+  ORDER BY ab.id DESC
+";
+$result = mysqli_query($conn, $query);
 
-        while ($row = mysqli_fetch_assoc($result)) {
-          echo "<tr>
-            <td>{$no}</td>
-            <td>{$row['nama_barang']}</td>
-            <td>" . ($row['nama_kategori'] ?? '-') . "</td>
-            <td>{$row['kondisi_barang']}</td>
-            <td>" . ($row['nama_lokasi'] ?? '-') . "</td>
-            <td>" . ($row['nama_program'] ?? '-') . "</td>
-            <td>";
+while ($row = mysqli_fetch_assoc($result)) {
+  echo "<tr>
+    <td>{$no}</td>
+    <td>{$row['nama_barang']}</td>
+    <td>" . ($row['nama_kategori'] ?? '-') . "</td>
+    <td>{$row['kondisi_barang']}</td>
+    <td>" . ($row['nama_lokasi'] ?? '-') . "</td>
+    <td>" . ($row['nama_program'] ?? '-') . "</td>
+    <td class='aksi-ikon'>";
 
-          // 🔹 Aksi tergantung role pengguna
-          if (has_access(['Admin', 'Operator'])) {
-            echo "
-              <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
-              <a href='delete.php?id={$row['id']}' class='btn' onclick='return confirm(\"Hapus data ini?\")'>Hapus</a>
-            ";
-          }
+  // 🔹 Aksi tergantung role pengguna
+  if (has_access(['Admin', 'Operator'])) {
+    echo "
+      <a href='update.php?id={$row['id']}' class='icon-btn' title='Edit'>
+        ✏️
+      </a>
+      <a href='delete.php?id={$row['id']}' class='icon-btn' title='Hapus' onclick='return confirm(\"Hapus data ini?\")'>
+        🗑️
+      </a>
+    ";
+  }
 
-          if (has_access(['Admin', 'Auditor'])) {
-            echo " <a href='detail.php?id={$row['id']}' class='btn'>Detail</a>";
-          }
+  if (has_access(['Admin', 'Auditor'])) {
+    echo "
+      <a href='detail.php?id={$row['id']}' class='icon-btn' title='Detail'>
+        🔍
+      </a>
+    ";
+  }
 
-          echo "</td></tr>";
-          $no++;
-        }
-      ?>
-      </tbody>
+  echo "</td></tr>";
+  $no++;
+}
+?>
+</tbody>
+
     </table>
   </div>
 </div>

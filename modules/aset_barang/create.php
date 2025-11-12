@@ -129,10 +129,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="kondisi_barang" required>
       <option value="Baik">Baik</option>
       <option value="Rusak">Rusak</option>
+      <option value="Rusak-perlu diservis, butuh dana besar">rusak, perlu diservis, butuh dana besar</option>
       <option value="Rusak-kaki kursi patah">Rusak-kaki kursi patah</option>
       <option value="Hilang">Hilang</option>
-      <option value="Habis Masa Pakai">Habis Masa Pakai</option>
-      <option value="Sedang diservis">Sedang diservis</option>
+      <option value="Rusak-Habis Masa Pakai">Rusak-Habis Masa Pakai</option>
+      <option value="Rusak-Sedang diservis">Rusak-Sedang diservis</option>
     </select>
 
     <label>Kode Barang</label>

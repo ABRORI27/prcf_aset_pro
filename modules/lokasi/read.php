@@ -58,8 +58,8 @@ include '../../config/db.php';
             // }
             echo "</td>
                     <td>
-                      <a href='update.php?id={$row['id']}' class='btn'>Edit</a>
-                      <a href='delete.php?id={$row['id']}' class='btn red' onclick='return confirm(\"Yakin hapus lokasi ini?\")'>Hapus</a>
+                      <a href='update.php?id={$row['id']}' class='icon-btn' title='Edit'>✏️</a>
+                      <a href='delete.php?id={$row['id']}' class='icon-btn' title='Hapus' onclick='return confirm(\"Yakin hapus lokasi ini?\")'>🗑️</a>
                     </td>
                   </tr>";
             $no++;
