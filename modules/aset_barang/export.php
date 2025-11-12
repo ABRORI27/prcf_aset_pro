@@ -3,11 +3,17 @@
 include '../../includes/auth_check.php';
 include '../../config/db.php';
 
+ob_clean();
+ob_start();
+
 // include composer autoload jika tersedia
 $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
+} else {
+    die("Autoload file tidak ditemukan di {$autoloadPath}");
 }
+
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -156,5 +162,6 @@ foreach ($rows as $row) {
     $no++;
 }
 echo "</tbody></table>";
+ob_end_flush();
 exit;
 ?>
