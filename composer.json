@@ -11,5 +11,7 @@
             "email": "anasanji27@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.2"
+    }
 }
