@@ -180,6 +180,7 @@ if ($stmt->execute()) {
     <select name="kondisi_barang" required>
       <option value="Baik">Baik</option>
       <option value="Rusak">Rusak</option>
+      <option value="Rusak-kaki kursi patah">Rusak-kaki kursi patah</option>
       <option value="Hilang">Hilang</option>
       <option value="Habis masa pakai">Habis masa pakai</option>
       <option value="Sedang diservis">Sedang diservis</option>
