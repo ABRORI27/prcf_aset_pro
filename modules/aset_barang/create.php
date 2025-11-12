@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $harga_pembelian   = $_POST['harga_pembelian'] ?? null;
   $waktu_perolehan   = $_POST['waktu_perolehan'] ?? null;
   $kondisi_barang    = $_POST['kondisi_barang'] ?? 'Baik';
-  $kode_penomoran    = $_POST['kode_penomoran'] ?? null;
+  $kode_barang    = $_POST['kode_barang'] ?? null;
   $kategori_barang   = (int) ($_POST['kategori_barang'] ?? 0);
   $nomor_plat        = $_POST['nomor_plat'] ?? null;
   $program_pendanaan = !empty($_POST['program_pendanaan']) ? (int)$_POST['program_pendanaan'] : null;
@@ -73,7 +73,7 @@ if (
     // --- Query INSERT (18 kolom bind_param) ---
     $sql = "INSERT INTO aset_barang (
       nama_barang, deskripsi, jumlah_unit, nomor_seri, nomor_urut_barang, 
-      harga_pembelian, waktu_perolehan, kondisi_barang, kode_penomoran, 
+      harga_pembelian, waktu_perolehan, kondisi_barang, kode_barang, 
       kategori_barang, nomor_plat, program_pendanaan, lokasi_barang, 
       user_input, foto_barang, status_penggunaan, tanggal_pajak, penanggung_jawab
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -94,7 +94,7 @@ if (
       $harga_pembelian,    // d
       $waktu_perolehan,    // s
       $kondisi_barang,     // s
-      $kode_penomoran,     // s
+      $kode_barang,     // s
       $kategori_barang,    // i
       $nomor_plat,         // s
       $program_pendanaan,  // i
@@ -186,8 +186,8 @@ if ($stmt->execute()) {
       <option value="Sedang diservis">Sedang diservis</option>
     </select>
 
-    <label>Kode Penomoran</label>
-    <input type="text" name="kode_penomoran">
+    <label>Kode Barang</label>
+    <input type="text" name="kode_barang">
 
         <label>Kategori Barang <span style="color:red">*</span></label>
     <select name="kategori_barang" id="kategori_barang" required onchange="toggleSubKategori()">

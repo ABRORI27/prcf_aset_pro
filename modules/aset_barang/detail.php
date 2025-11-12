@@ -65,7 +65,7 @@ if (!empty($aset['waktu_perolehan']) && $aset['waktu_perolehan'] !== '0000-00-00
       <!-- Tambahan: Nomor Urut Barang -->
       <tr><th>Nomor Urut Barang</th><td><?= htmlspecialchars($aset['nomor_urut_barang'] ?? '-') ?></td></tr>
 
-      <tr><th>Kode Penomoran</th><td><?= htmlspecialchars($aset['kode_penomoran']) ?></td></tr>
+      <tr><th>Kode Barang</th><td><?= htmlspecialchars($aset['kode_barang']) ?></td></tr>
       <tr><th>Harga Pembelian</th><td>Rp <?= number_format($aset['harga_pembelian'], 0, ',', '.') ?></td></tr>
 
       <!-- Format tanggal sesuai input manual -->

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $waktu_perolehan   = $_POST['waktu_perolehan'];
     $lokasi_barang     = $_POST['lokasi_barang'];
     $kondisi_barang    = $_POST['kondisi_barang'];
-    $kode_penomoran    = $_POST['kode_penomoran'];
+    $kode_barang    = $_POST['kode_barang'];
     $program_pendanaan = !empty($_POST['program_pendanaan']) ? $_POST['program_pendanaan'] : null;
     $kategori_barang   = $_POST['kategori_barang'];
     $nomor_plat        = $_POST['nomor_plat'] ?? null;
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         UPDATE aset_barang SET 
             nama_barang = ?, deskripsi = ?, jumlah_unit = ?, nomor_seri = ?,
             nomor_urut_barang = ?, harga_pembelian = ?, waktu_perolehan = ?, lokasi_barang = ?,
-            kondisi_barang = ?, kode_penomoran = ?, program_pendanaan = ?,
+            kondisi_barang = ?, kode_barang = ?, program_pendanaan = ?,
             kategori_barang = ?, nomor_plat = ?, tanggal_pajak = ?, penanggung_jawab = ?
         WHERE id = ?
     ");
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "ssississssissssi",
         $nama_barang, $deskripsi, $jumlah_unit, $nomor_seri,
         $nomor_urut_barang, $harga_pembelian, $waktu_perolehan, $lokasi_barang,
-        $kondisi_barang, $kode_penomoran, $program_pendanaan,
+        $kondisi_barang, $kode_barang, $program_pendanaan,
         $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab, $id
     );
 
@@ -111,8 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Sedang Diservis" <?= $aset['kondisi_barang']=='Sedang Diservis'?'selected':'' ?>>Sedang Diservis</option>
         </select>
 
-        <label>Kode Penomoran</label>
-        <input type="text" name="kode_penomoran" value="<?= $aset['kode_penomoran'] ?>">
+        <label>Kode Barang</label>
+        <input type="text" name="kode_barang" value="<?= $aset['kode_barang'] ?>">
 
         <label>Program Pendanaan</label>
         <select name="program_pendanaan">
