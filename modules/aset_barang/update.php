@@ -135,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="5" <?= $aset['kategori_barang']==5?'selected':'' ?>>Field Equipment (Kendaraan)</option>
             <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Fire Equipment</option>
             <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Office Equipment</option>
+            <option value="8" <?= $aset['kategori_barang']==8?'selected':'' ?>>Peralatan Lapangan</option>
         </select>
 
         <!-- Field tambahan Kendaraan / Field Equipment -->

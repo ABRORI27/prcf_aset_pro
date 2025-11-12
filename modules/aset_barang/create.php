@@ -28,21 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $tanggal_pajak     = $_POST['tanggal_pajak'] ?? null;
   $penanggung_jawab  = $_POST['penanggung_jawab'] ?? null;
   $user_input        = $_SESSION['user_id'] ?? null;
-  $sub_kategori_lapangan = $_POST['sub_kategori_lapangan'] ?? null;
 
   // Ambil nama kategori
   $kategoriCheck = $conn->query("SELECT nama_kategori FROM kategori_barang WHERE id = $kategori_barang")->fetch_assoc();
   $namaKategori = strtolower($kategoriCheck['nama_kategori'] ?? '');
 
   // --- Tentukan apakah kategori ini kendaraan ---
-  $isKendaraan = false;
-  $namaKategoriLower = strtolower(trim($namaKategori));
-  if (
-      str_contains($namaKategoriLower, 'kendaraan') ||
-      str_contains($sub_kategori_lapangan, 'kendaraan')
-  ) {
-      $isKendaraan = true;
-  }
+  $isKendaraan = str_contains($namaKategori, 'kendaraan');
 
   // --- Nomor seri opsional untuk semua kategori ---
   if (empty($nomor_seri)) {
@@ -90,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($stmt->execute()) {
     $aset_id = $conn->insert_id;
 
-    // Jika kendaraan, masukkan ke tabel kendaraan
+    // Jika kategori kendaraan, masukkan ke tabel kendaraan
     if ($isKendaraan) {
         $insertKendaraan = $conn->prepare("
           INSERT INTO kendaraan (aset_id, nomor_seri, nomor_plat, tanggal_pajak, penanggung_jawab)
@@ -152,19 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php while ($row = $kategoriList->fetch_assoc()): ?>
         <option value="<?= $row['id']; ?>"><?= htmlspecialchars($row['nama_kategori']); ?></option>
       <?php endwhile; ?>
-      <option value="lapangan">Peralatan Lapangan (Kendaraan)</option>
-      <option value="lapangan_non">Peralatan Lapangan (Non-Kendaraan)</option>
     </select>
-
-    <!-- Subkategori Lapangan -->
-    <div id="subKategoriLapangan" style="display:none; margin-top:10px;">
-      <label>Sub Kategori Peralatan Lapangan</label>
-      <select name="sub_kategori_lapangan" id="sub_kategori_lapangan" onchange="handleKategoriChange()">
-        <option value="">-- Pilih Sub Kategori --</option>
-        <option value="kendaraan">Kendaraan Lapangan</option>
-        <option value="non">Non-Kendaraan Lapangan</option>
-      </select>
-    </div>
 
     <!-- Field tambahan kendaraan -->
     <div id="kendaraanFields" style="display:none;">
@@ -202,21 +182,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 function handleKategoriChange() {
   const kategoriSelect = document.getElementById('kategori_barang');
-  const subLapangan = document.getElementById('subKategoriLapangan');
   const kendaraanFields = document.getElementById('kendaraanFields');
 
   const selectedText = kategoriSelect.options[kategoriSelect.selectedIndex].text.toLowerCase();
-  const subSelected = document.getElementById('sub_kategori_lapangan')?.value || '';
 
-  // Tampilkan subkategori lapangan bila kategori mengandung "lapangan"
-  if (selectedText.includes('lapangan')) {
-    subLapangan.style.display = 'block';
-  } else {
-    subLapangan.style.display = 'none';
-  }
-
-  // Tampilkan field kendaraan jika kategori atau subkategori mengandung "kendaraan"
-  if (selectedText.includes('kendaraan') || subSelected === 'kendaraan') {
+  // Jika kategori mengandung "kendaraan", tampilkan field kendaraan
+  if (selectedText.includes('kendaraan')) {
     kendaraanFields.style.display = 'block';
   } else {
     kendaraanFields.style.display = 'none';
