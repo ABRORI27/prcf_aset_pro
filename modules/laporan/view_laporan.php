@@ -20,7 +20,7 @@ include '../../config/db.php';
     h1 {
       text-align: center;
       color: #2b6b4f;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .laporan-container {
@@ -30,26 +30,11 @@ include '../../config/db.php';
       padding: 20px;
     }
 
-    .filter-bar {
+    .top-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .filter-bar label {
-      font-weight: bold;
-      font-size: 14px;
-      margin-right: 4px;
-    }
-
-    .filter-bar select, .filter-bar input {
-      padding: 6px 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+      margin-bottom: 10px;
     }
 
     .btn {
@@ -67,10 +52,30 @@ include '../../config/db.php';
       background-color: #1f4e3a;
     }
 
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .filter-bar label {
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .filter-bar select, .filter-bar input {
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
+      margin-top: 10px;
       background: white;
     }
 
@@ -99,75 +104,91 @@ include '../../config/db.php';
 </head>
 <body>
   <h1>Laporan Aset Barang PRCF Indonesia</h1>
-  <button type="button" class="btn" onclick="window.print()">🖨 Cetak</button>
-        <a href="../../index.php" class="btn">⬅ Kembali</a>
+
   <div class="laporan-container">
-    <div class="filter-bar no-print">
-      <form method="GET">
-    
-        <!-- Nama Barang -->
-        <label for="nama_barang">Nama Barang:</label>
-        <select name="nama_barang" id="nama_barang">
-          <option value="">Semua</option>
-          <?php
-          $nama = mysqli_query($conn, "SELECT DISTINCT nama_barang FROM aset_barang ORDER BY nama_barang");
-          while ($n = mysqli_fetch_assoc($nama)) {
-            $selected = (isset($_GET['nama_barang']) && $_GET['nama_barang'] == $n['nama_barang']) ? 'selected' : '';
-            echo "<option value='{$n['nama_barang']}' $selected>{$n['nama_barang']}</option>";
-          }
-          ?>
-        </select>
-
-        <!-- Kategori -->
-        <label for="kategori">Kategori:</label>
-        <select name="kategori" id="kategori">
-          <option value="">Semua</option>
-          <?php
-          $kategori = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY nama_kategori");
-          while ($k = mysqli_fetch_assoc($kategori)) {
-            $selected = (isset($_GET['kategori']) && $_GET['kategori'] == $k['id']) ? 'selected' : '';
-            echo "<option value='{$k['id']}' $selected>{$k['nama_kategori']}</option>";
-          }
-          ?>
-        </select>
-
-        <!-- Kondisi -->
-        <label for="kondisi">Kondisi:</label>
-        <select name="kondisi" id="kondisi">
-          <option value="">Semua</option>
-          <option value="Baik" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Baik') ? 'selected' : '' ?>>Baik</option>
-          <option value="Rusak Ringan" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Rusak Ringan') ? 'selected' : '' ?>>Rusak Ringan</option>
-          <option value="Rusak Berat" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Rusak Berat') ? 'selected' : '' ?>>Rusak Berat</option>
-        </select>
-
-        <!-- Lokasi -->
-        <label for="lokasi">Lokasi:</label>
-        <select name="lokasi" id="lokasi">
-          <option value="">Semua</option>
-          <?php
-          $lokasi = mysqli_query($conn, "SELECT * FROM lokasi_barang ORDER BY nama_lokasi");
-          while ($l = mysqli_fetch_assoc($lokasi)) {
-            $selected = (isset($_GET['lokasi']) && $_GET['lokasi'] == $l['id']) ? 'selected' : '';
-            echo "<option value='{$l['id']}' $selected>{$l['nama_lokasi']}</option>";
-          }
-          ?>
-        </select>
-       
-        <!-- Program Pendanaan -->
-        <label for="program">Program:</label>
-        <select name="program" id="program">
-          <option value="">Semua</option>
-          <?php
-          $program = mysqli_query($conn, "SELECT * FROM program_pendanaan ORDER BY nama_program");
-          while ($p = mysqli_fetch_assoc($program)) {
-            $selected = (isset($_GET['program']) && $_GET['program'] == $p['id']) ? 'selected' : '';
-            echo "<option value='{$p['id']}' $selected>{$p['nama_program']}</option>";
-          }
-          ?>
-        </select>
-        <button type="submit" class="btn">Tampilkan</button>
-      </form>
+    <div class="top-buttons no-print">
+      <div>
+        <button type="button" class="btn" onclick="window.print()">🖨 Cetak</button>
+        <a href="../../index.php" class="btn">⬅ Kembali</a>
+      </div>
     </div>
+
+    <form method="GET" class="filter-bar no-print">
+      <!-- Nama Barang -->
+      <label for="nama_barang">Nama Barang:</label>
+      <select name="nama_barang" id="nama_barang">
+        <option value="">Semua</option>
+        <?php
+        $nama = mysqli_query($conn, "SELECT DISTINCT nama_barang FROM aset_barang ORDER BY nama_barang");
+        while ($n = mysqli_fetch_assoc($nama)) {
+          $selected = (isset($_GET['nama_barang']) && $_GET['nama_barang'] == $n['nama_barang']) ? 'selected' : '';
+          echo "<option value='{$n['nama_barang']}' $selected>{$n['nama_barang']}</option>";
+        }
+        ?>
+      </select>
+
+      <!-- Kategori -->
+      <label for="kategori">Kategori:</label>
+      <select name="kategori" id="kategori">
+        <option value="">Semua</option>
+        <?php
+        $kategori = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY nama_kategori");
+        while ($k = mysqli_fetch_assoc($kategori)) {
+          $selected = (isset($_GET['kategori']) && $_GET['kategori'] == $k['id']) ? 'selected' : '';
+          echo "<option value='{$k['id']}' $selected>{$k['nama_kategori']}</option>";
+        }
+        ?>
+      </select>
+
+      <!-- Kondisi -->
+      <label for="kondisi">Kondisi:</label>
+      <select name="kondisi" id="kondisi">
+        <option value="">Semua</option>
+        <?php
+        $enumKondisi = [
+          'Baik',
+          'Rusak',
+          'Rusak-perlu diservis, butuh dana besar',
+          'Rusak-kaki kursi patah',
+          'Rusak-Sedang diservis',
+          'Hilang',
+          'Rusak-Habis Masa Pakai',
+          'Kurang baik-Perlu diservis'
+        ];
+        foreach ($enumKondisi as $kond) {
+          $selected = (isset($_GET['kondisi']) && $_GET['kondisi'] == $kond) ? 'selected' : '';
+          echo "<option value='$kond' $selected>$kond</option>";
+        }
+        ?>
+      </select>
+
+      <!-- Lokasi -->
+      <label for="lokasi">Lokasi:</label>
+      <select name="lokasi" id="lokasi">
+        <option value="">Semua</option>
+        <?php
+        $lokasi = mysqli_query($conn, "SELECT * FROM lokasi_barang ORDER BY nama_lokasi");
+        while ($l = mysqli_fetch_assoc($lokasi)) {
+          $selected = (isset($_GET['lokasi']) && $_GET['lokasi'] == $l['id']) ? 'selected' : '';
+          echo "<option value='{$l['id']}' $selected>{$l['nama_lokasi']}</option>";
+        }
+        ?>
+      </select>
+
+      <!-- Program Pendanaan -->
+      <label for="program">Program:</label>
+      <select name="program" id="program">
+        <option value="">Semua</option>
+        <?php
+        $program = mysqli_query($conn, "SELECT * FROM program_pendanaan ORDER BY nama_program");
+        while ($p = mysqli_fetch_assoc($program)) {
+          $selected = (isset($_GET['program']) && $_GET['program'] == $p['id']) ? 'selected' : '';
+          echo "<option value='{$p['id']}' $selected>{$p['nama_program']}</option>";
+        }
+        ?>
+      </select>
+        <button type="submit" class="btn">🔍 Filter</button>
+    </form>
 
     <table>
       <thead>
@@ -183,7 +204,6 @@ include '../../config/db.php';
       </thead>
       <tbody>
         <?php
-        // === Build filter SQL ===
         $where = [];
         if (!empty($_GET['nama_barang'])) $where[] = "ab.nama_barang = '".mysqli_real_escape_string($conn, $_GET['nama_barang'])."'";
         if (!empty($_GET['kategori'])) $where[] = "ab.kategori_barang = '".mysqli_real_escape_string($conn, $_GET['kategori'])."'";
