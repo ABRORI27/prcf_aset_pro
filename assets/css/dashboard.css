@@ -304,7 +304,7 @@ body.light-mode .form-section {
   border-radius: 6px;
   border: 1px solid #23303a;
   background: #0b1220;
-  color: var(--text-dark);
+  color: var(--text-light);
   margin-bottom: 10px;
 }
 body.light-mode .form-section input,
