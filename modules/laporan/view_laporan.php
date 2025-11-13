@@ -99,10 +99,12 @@ include '../../config/db.php';
 </head>
 <body>
   <h1>Laporan Aset Barang PRCF Indonesia</h1>
-
+  <button type="button" class="btn" onclick="window.print()">🖨 Cetak</button>
+        <a href="../../index.php" class="btn">⬅ Kembali</a>
   <div class="laporan-container">
     <div class="filter-bar no-print">
       <form method="GET">
+    
         <!-- Nama Barang -->
         <label for="nama_barang">Nama Barang:</label>
         <select name="nama_barang" id="nama_barang">
@@ -150,7 +152,7 @@ include '../../config/db.php';
           }
           ?>
         </select>
-
+       
         <!-- Program Pendanaan -->
         <label for="program">Program:</label>
         <select name="program" id="program">
@@ -163,9 +165,6 @@ include '../../config/db.php';
           }
           ?>
         </select>
-
-        <button type="button" class="btn" onclick="window.print()">🖨 Cetak</button>
-        <a href="../../index.php" class="btn">⬅ Kembali</a>
         <button type="submit" class="btn">Tampilkan</button>
       </form>
     </div>
