@@ -6,13 +6,53 @@ $token = $_GET['token'] ?? '';
 $message = '';
 $valid_token = false;
 
+error_log("RESET_PASSWORD - Token received: " . $token);
+
 // Validasi token
 if (!empty($token)) {
     $token = mysqli_real_escape_string($conn, $token);
-    $check = mysqli_query($conn, "SELECT id, email FROM users WHERE reset_token='$token' AND token_expired > NOW()");
-    if (mysqli_num_rows($check) > 0) {
-        $valid_token = true;
-        $user_data = mysqli_fetch_assoc($check);
+    
+    // DEBUG: Cek token di database dengan berbagai kondisi
+    $debug_query = mysqli_query($conn, "SELECT id, email, reset_token, token_expired, NOW() as current_time FROM users WHERE reset_token='$token'");
+    if ($debug_query && mysqli_num_rows($debug_query) > 0) {
+        $debug_data = mysqli_fetch_assoc($debug_query);
+        error_log("DEBUG - Token found: " . $debug_data['reset_token'] . ", Expired: " . $debug_data['token_expired'] . ", Current: " . $debug_data['current_time']);
+        
+        // Cek manual expiry
+        $current_time = strtotime($debug_data['current_time']);
+        $expired_time = strtotime($debug_data['token_expired']);
+        $time_diff = $expired_time - $current_time;
+        
+        error_log("DEBUG - Time check: Current=" . date('Y-m-d H:i:s', $current_time) . ", Expired=" . date('Y-m-d H:i:s', $expired_time) . ", Diff=" . $time_diff . " seconds");
+        
+        if ($time_diff > 0) {
+            error_log("DEBUG - Token is still valid");
+            $valid_token = true;
+            $user_data = $debug_data;
+        } else {
+            error_log("DEBUG - Token has expired");
+        }
+    } else {
+        error_log("DEBUG - Token NOT found in database");
+    }
+}
+
+// Alternatif validation yang lebih reliable
+if (!$valid_token && !empty($token)) {
+    // Gunakan PHP untuk validasi waktu, bukan MySQL
+    $check_query = mysqli_query($conn, "SELECT id, email, reset_token, token_expired FROM users WHERE reset_token='$token'");
+    if ($check_query && mysqli_num_rows($check_query) > 0) {
+        $token_data = mysqli_fetch_assoc($check_query);
+        $current_time = time();
+        $expired_time = strtotime($token_data['token_expired']);
+        
+        if ($expired_time > $current_time) {
+            $valid_token = true;
+            $user_data = $token_data;
+            error_log("DEBUG - PHP Time Validation: Token VALID");
+        } else {
+            error_log("DEBUG - PHP Time Validation: Token EXPIRED");
+        }
     }
 }
 
@@ -20,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $token = mysqli_real_escape_string($conn, $_POST['token']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    
+    error_log("RESET_PASSWORD POST - Token: " . $token);
     
     // Validasi password
     if (empty($password) || empty($confirm_password)) {
@@ -29,23 +71,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($password !== $confirm_password) {
         $message = "<div class='error'>Konfirmasi password tidak cocok.</div>";
     } else {
-        // Cek token validity lagi
-        $check = mysqli_query($conn, "SELECT id FROM users WHERE reset_token='$token' AND token_expired > NOW()");
-        if (mysqli_num_rows($check) > 0) {
-            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        // Validasi token dengan PHP (lebih reliable)
+        $check_query = mysqli_query($conn, "SELECT id, email, reset_token, token_expired FROM users WHERE reset_token='$token'");
+        if ($check_query && mysqli_num_rows($check_query) > 0) {
+            $token_data = mysqli_fetch_assoc($check_query);
+            $current_time = time();
+            $expired_time = strtotime($token_data['token_expired']);
             
-            // Update password dan clear token
-            mysqli_query($conn, "UPDATE users SET password='$hashed_password', reset_token=NULL, token_expired=NULL WHERE reset_token='$token'");
-            
-            if (mysqli_affected_rows($conn) > 0) {
-                $_SESSION['success_message'] = "Password berhasil diperbarui. Silakan login dengan password baru.";
-                header('Location: login.php');
-                exit();
+            if ($expired_time > $current_time) {
+                $user_data = $token_data;
+                error_log("DEBUG - Resetting password for: " . $user_data['email']);
+                
+                // Hash password
+                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+                
+                // Update password dan clear token
+                $update_query = mysqli_query($conn, "UPDATE users SET password_hash='$hashed_password', reset_token=NULL, token_expired=NULL WHERE reset_token='$token'");
+                
+                if ($update_query && mysqli_affected_rows($conn) > 0) {
+                    error_log("DEBUG - Password reset successful for: " . $user_data['email']);
+                    $_SESSION['success_message'] = "Password berhasil diperbarui. Silakan login dengan password baru.";
+                    header('Location: login.php');
+                    exit();
+                } else {
+                    $error_msg = mysqli_error($conn);
+                    error_log("DEBUG - Update failed: " . $error_msg);
+                    $message = "<div class='error'>Gagal memperbarui password. Error: $error_msg</div>";
+                }
             } else {
-                $message = "<div class='error'>Gagal memperbarui password. Silakan coba lagi.</div>";
+                $message = "<div class='error'>Token sudah kedaluwarsa.</div>";
+                $valid_token = false;
             }
         } else {
-            $message = "<div class='error'>Token tidak valid atau sudah kedaluwarsa.</div>";
+            $message = "<div class='error'>Token tidak valid.</div>";
             $valid_token = false;
         }
     }
@@ -159,11 +217,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #721c24;
             margin-bottom: 15px;
         }
+        .debug-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Reset Password</h2>
+        
+        <!-- Debug info -->
+        <?php if (!empty($token)): ?>
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            Token: <?= substr($token, 0, 10) ?>...<br>
+            Status: <?= $valid_token ? 'Valid' : 'Invalid' ?><br>
+            <?php if (isset($debug_data)): ?>
+            Expired: <?= $debug_data['token_expired'] ?><br>
+            Current: <?= $debug_data['current_time'] ?><br>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
         
         <?php if (!$valid_token && empty($message)): ?>
             <div class="token-invalid">
@@ -177,6 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php else: ?>
             <?= $message ?>
             
+            <?php if ($valid_token): ?>
             <form method="POST" id="resetForm">
                 <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                 
@@ -195,11 +276,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 <button type="submit">Ubah Password</button>
             </form>
+            <?php endif; ?>
             
             <div class="back-link">
                 <a href="login.php">← Kembali ke Login</a>
             </div>
             
+            <?php if ($valid_token): ?>
             <script>
                 document.getElementById('resetForm').addEventListener('submit', function(e) {
                     const password = document.getElementById('password').value;
@@ -218,6 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                 });
             </script>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </body>

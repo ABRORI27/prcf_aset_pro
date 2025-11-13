@@ -1,11 +1,15 @@
 <?php
+// Manual load PHPMailer dari folder yang sudah ada
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php';
-include 'includes/koneksi.php';
-
+include 'config/db.php';
 session_start();
+
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -15,68 +19,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "<div class='error'>Format email tidak valid.</div>";
     } else {
-        // cek email di database
-        $query = mysqli_query($conn, "SELECT id, name FROM users WHERE email = '$email'");
-        if (mysqli_num_rows($query) > 0) {
+        // cek email di database - SESUAIKAN DENGAN STRUKTUR TABEL
+        $query = mysqli_query($conn, "SELECT id, nama_lengkap, email FROM users WHERE email = '$email'");
+        
+        // Cek jika query berhasil
+        if ($query === false) {
+            $message = "<div class='error'>Error database: " . mysqli_error($conn) . "</div>";
+        } 
+        elseif (mysqli_num_rows($query) > 0) {
             $user = mysqli_fetch_assoc($query);
             $token = bin2hex(random_bytes(16));
             $expired = date('Y-m-d H:i:s', strtotime('+30 minutes'));
             
-            // Update token
-            mysqli_query($conn, "UPDATE users SET reset_token='$token', token_expired='$expired' WHERE email='$email'");
-
-            // kirim email reset password
-            $mail = new PHPMailer(true);
-            try {
-                // SMTP config - SEBAIKNYA PINDAH KE CONFIG FILE
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = '15anasanjiabrori@gmail.com';
-                $mail->Password = 'rsgr qjsx ampc xork';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
-                $mail->CharSet = 'UTF-8';
-
-                // Email content
-                $mail->setFrom('15anasanjiabrori@gmail.com', 'PRCF Indonesia');
-                $mail->addAddress($email, $user['name']);
-                $mail->isHTML(true);
-                $mail->Subject = 'Reset Password - PRCF Indonesia';
+            // DEBUG: Tampilkan token dan expired time
+            error_log("DEBUG - Token: $token, Expired: $expired, Email: $email");
+            
+            // Update token - SESUAIKAN DENGAN STRUKTUR TABEL
+            $update_query = mysqli_query($conn, "UPDATE users SET reset_token='$token', token_expired='$expired' WHERE email='$email'");
+            
+            if ($update_query === false) {
+                $error_msg = mysqli_error($conn);
+                $message = "<div class='error'>Error update token: $error_msg</div>";
+                error_log("UPDATE Error: $error_msg");
+            } else {
+                $affected_rows = mysqli_affected_rows($conn);
+                error_log("DEBUG - Affected rows: $affected_rows");
                 
-                $reset_link = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/reset_password.php?token=$token";
-                
-                $mail->Body = "
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                        <h2 style='color: #2b6b4f;'>Reset Password PRCF Indonesia</h2>
-                        <p>Halo <b>{$user['name']}</b>,</p>
-                        <p>Kami menerima permintaan reset password untuk akun Anda.</p>
-                        <p>Klik tombol berikut untuk mengatur ulang password:</p>
-                        <p style='text-align: center; margin: 30px 0;'>
-                            <a href='$reset_link' style='background-color: #2b6b4f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;'>
-                                Reset Password
-                            </a>
-                        </p>
-                        <p>Atau copy link berikut ke browser Anda:</p>
-                        <p style='word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 4px;'>
-                            $reset_link
-                        </p>
-                        <p><small>Link ini akan kedaluwarsa dalam 30 menit.</small></p>
-                        <p>Jika Anda tidak meminta reset password, abaikan email ini.</p>
-                        <br>
-                        <p>Hormat kami,<br>Tim PRCF Indonesia</p>
-                    </div>
-                ";
-
-                // Tambahkan plain text version
-                $mail->AltBody = "Reset Password PRCF Indonesia\n\nHalo {$user['name']},\n\nKlik link berikut untuk reset password: $reset_link\n\nLink berlaku 30 menit.";
-
-                if ($mail->send()) {
-                    $message = "<div class='success'>Email reset password telah dikirim ke <b>$email</b>. Periksa folder spam jika tidak ditemukan.</div>";
+                // Verifikasi token berhasil disimpan
+                $verify_query = mysqli_query($conn, "SELECT reset_token, token_expired FROM users WHERE email='$email'");
+                if ($verify_query && mysqli_num_rows($verify_query) > 0) {
+                    $verify_data = mysqli_fetch_assoc($verify_query);
+                    error_log("DEBUG - Stored token: " . $verify_data['reset_token'] . ", Expired: " . $verify_data['token_expired']);
                 }
-            } catch (Exception $e) {
-                error_log("Mailer Error: " . $mail->ErrorInfo);
-                $message = "<div class='error'>Gagal mengirim email. Silakan coba lagi beberapa saat.</div>";
+                
+                // kirim email reset password
+                $mail = new PHPMailer(true);
+                try {
+                    // Server settings
+                    $mail->isSMTP();
+                    $mail->Host       = 'smtp.gmail.com';
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = '15anasanjiabrori@gmail.com';
+                    $mail->Password   = 'rsgr qjsx ampc xork';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port       = 587;
+
+                    // Recipients
+                    $mail->setFrom('15anasanjiabrori@gmail.com', 'PRCF Indonesia');
+                    $mail->addAddress($email, $user['nama_lengkap']); // gunakan nama_lengkap
+
+                    // Content
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Reset Password - PRCF Indonesia';
+                    
+                    $reset_link = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/reset_password.php?token=$token";
+                    
+                    // DEBUG: Tampilkan link di browser untuk testing (HAPUS INI DI PRODUCTION)
+                    $debug_link = "<br><br><small><strong>DEBUG LINK:</strong> <a href='$reset_link' style='color: #007bff;'>$reset_link</a></small>";
+                    
+                    $mail->Body = "
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                            <h2 style='color: #2b6b4f;'>Reset Password PRCF Indonesia</h2>
+                            <p>Halo <b>{$user['nama_lengkap']}</b>,</p>
+                            <p>Kami menerima permintaan reset password untuk akun Anda.</p>
+                            <p>Klik tombol berikut untuk mengatur ulang password:</p>
+                            <p style='text-align: center; margin: 30px 0;'>
+                                <a href='$reset_link' style='background-color: #2b6b4f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;'>
+                                    Reset Password
+                                </a>
+                            </p>
+                            <p>Atau copy link berikut ke browser Anda:</p>
+                            <p style='word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 4px;'>
+                                $reset_link
+                            </p>
+                            <p><small>Link ini akan kedaluwarsa dalam 30 menit.</small></p>
+                            <p>Jika Anda tidak meminta reset password, abaikan email ini.</p>
+                            <br>
+                            <p>Hormat kami,<br>Tim PRCF Indonesia</p>
+                        </div>
+                    ";
+
+                    $mail->AltBody = "Reset Password PRCF Indonesia\n\nHalo {$user['nama_lengkap']},\n\nKlik link berikut untuk reset password: $reset_link\n\nLink berlaku 30 menit.";
+
+                    if ($mail->send()) {
+                        $message = "<div class='success'>Email reset password telah dikirim ke <b>$email</b>. Periksa folder spam jika tidak ditemukan. $debug_link</div>";
+                    }
+                } catch (Exception $e) {
+                    error_log("Mailer Error: " . $mail->ErrorInfo);
+                    $message = "<div class='error'>Gagal mengirim email. Silakan coba lagi beberapa saat.</div>";
+                }
             }
         } else {
             $message = "<div class='error'>Email tidak ditemukan dalam sistem.</div>";
@@ -91,7 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password - PRCF Indonesia</title>
-    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -115,10 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .logo {
             text-align: center;
             margin-bottom: 30px;
-        }
-        .logo img {
-            max-width: 150px;
-            height: auto;
         }
         h2 {
             text-align: center;
@@ -170,9 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(43, 107, 79, 0.3);
         }
-        button:active {
-            transform: translateY(0);
-        }
         .success {
             background: #d4edda;
             color: #155724;
@@ -200,15 +223,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-decoration: none;
             font-size: 14px;
         }
-        .back-link a:hover {
-            text-decoration: underline;
+        .debug-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            <!-- Tambahkan logo PRCF di sini -->
             <h2 style="color: #2b6b4f; margin: 0;">PRCF INDONESIA</h2>
         </div>
         
@@ -226,6 +254,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
         
         <?= $message ?>
+        
+        <!-- Debug info untuk testing -->
+        <?php
+        // Cek data users yang ada
+        $users_query = mysqli_query($conn, "SELECT email, nama_lengkap FROM users LIMIT 5");
+        if ($users_query && mysqli_num_rows($users_query) > 0) {
+            echo "<div class='debug-info'>";
+            echo "<strong>Users dalam database:</strong><br>";
+            while ($user = mysqli_fetch_assoc($users_query)) {
+                echo "• {$user['email']} ({$user['nama_lengkap']})<br>";
+            }
+            echo "</div>";
+        }
+        ?>
         
         <div class="back-link">
             <a href="login.php">← Kembali ke Login</a>
