@@ -393,7 +393,7 @@ body.light-mode .login-box {
   border-radius: 6px;
   border: 1px solid #23303a;
   background: #0b1220;
-  color: var(--text-dark);
+  color: var(--text-light);
 }
 body.light-mode .login-box input {
   background: #fff;
