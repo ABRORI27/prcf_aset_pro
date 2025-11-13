@@ -32,11 +32,17 @@ include '../../config/db.php';
 
     .filter-bar {
       display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 10px;
+    }
+
+    .filter-bar label {
+      font-weight: bold;
+      font-size: 14px;
+      margin-right: 4px;
     }
 
     .filter-bar select, .filter-bar input {
@@ -97,6 +103,20 @@ include '../../config/db.php';
   <div class="laporan-container">
     <div class="filter-bar no-print">
       <form method="GET">
+        <!-- Nama Barang -->
+        <label for="nama_barang">Nama Barang:</label>
+        <select name="nama_barang" id="nama_barang">
+          <option value="">Semua</option>
+          <?php
+          $nama = mysqli_query($conn, "SELECT DISTINCT nama_barang FROM aset_barang ORDER BY nama_barang");
+          while ($n = mysqli_fetch_assoc($nama)) {
+            $selected = (isset($_GET['nama_barang']) && $_GET['nama_barang'] == $n['nama_barang']) ? 'selected' : '';
+            echo "<option value='{$n['nama_barang']}' $selected>{$n['nama_barang']}</option>";
+          }
+          ?>
+        </select>
+
+        <!-- Kategori -->
         <label for="kategori">Kategori:</label>
         <select name="kategori" id="kategori">
           <option value="">Semua</option>
@@ -109,6 +129,16 @@ include '../../config/db.php';
           ?>
         </select>
 
+        <!-- Kondisi -->
+        <label for="kondisi">Kondisi:</label>
+        <select name="kondisi" id="kondisi">
+          <option value="">Semua</option>
+          <option value="Baik" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Baik') ? 'selected' : '' ?>>Baik</option>
+          <option value="Rusak Ringan" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Rusak Ringan') ? 'selected' : '' ?>>Rusak Ringan</option>
+          <option value="Rusak Berat" <?= (isset($_GET['kondisi']) && $_GET['kondisi'] == 'Rusak Berat') ? 'selected' : '' ?>>Rusak Berat</option>
+        </select>
+
+        <!-- Lokasi -->
         <label for="lokasi">Lokasi:</label>
         <select name="lokasi" id="lokasi">
           <option value="">Semua</option>
@@ -117,6 +147,19 @@ include '../../config/db.php';
           while ($l = mysqli_fetch_assoc($lokasi)) {
             $selected = (isset($_GET['lokasi']) && $_GET['lokasi'] == $l['id']) ? 'selected' : '';
             echo "<option value='{$l['id']}' $selected>{$l['nama_lokasi']}</option>";
+          }
+          ?>
+        </select>
+
+        <!-- Program Pendanaan -->
+        <label for="program">Program:</label>
+        <select name="program" id="program">
+          <option value="">Semua</option>
+          <?php
+          $program = mysqli_query($conn, "SELECT * FROM program_pendanaan ORDER BY nama_program");
+          while ($p = mysqli_fetch_assoc($program)) {
+            $selected = (isset($_GET['program']) && $_GET['program'] == $p['id']) ? 'selected' : '';
+            echo "<option value='{$p['id']}' $selected>{$p['nama_program']}</option>";
           }
           ?>
         </select>
@@ -141,9 +184,13 @@ include '../../config/db.php';
       </thead>
       <tbody>
         <?php
+        // === Build filter SQL ===
         $where = [];
+        if (!empty($_GET['nama_barang'])) $where[] = "ab.nama_barang = '".mysqli_real_escape_string($conn, $_GET['nama_barang'])."'";
         if (!empty($_GET['kategori'])) $where[] = "ab.kategori_barang = '".mysqli_real_escape_string($conn, $_GET['kategori'])."'";
+        if (!empty($_GET['kondisi'])) $where[] = "ab.kondisi_barang = '".mysqli_real_escape_string($conn, $_GET['kondisi'])."'";
         if (!empty($_GET['lokasi'])) $where[] = "ab.lokasi_barang = '".mysqli_real_escape_string($conn, $_GET['lokasi'])."'";
+        if (!empty($_GET['program'])) $where[] = "ab.program_pendanaan = '".mysqli_real_escape_string($conn, $_GET['program'])."'";
 
         $whereSQL = $where ? "WHERE ".implode(" AND ", $where) : "";
 
