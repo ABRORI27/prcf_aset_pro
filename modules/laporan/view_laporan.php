@@ -164,9 +164,9 @@ include '../../config/db.php';
           ?>
         </select>
 
-        <button type="submit" class="btn">Tampilkan</button>
         <button type="button" class="btn" onclick="window.print()">🖨 Cetak</button>
         <a href="../../index.php" class="btn">⬅ Kembali</a>
+        <button type="submit" class="btn">Tampilkan</button>
       </form>
     </div>
 
