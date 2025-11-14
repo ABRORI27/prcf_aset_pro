@@ -2,6 +2,13 @@
 include '../../includes/header.php';
 include '../../config/db.php';
 
+// 🔐 CEK AKSES - Hanya Admin & Operator
+if (!has_access([ROLE_ADMIN, ROLE_OPERATOR])) {
+    $_SESSION['error'] = "Anda tidak memiliki akses ke modul ini.";
+    header('Location: ' . BASE_URL . 'index.php');
+    exit();
+}
+
 $err = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Cari kategori_id untuk "Kendaraan"

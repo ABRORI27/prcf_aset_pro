@@ -84,46 +84,47 @@ $is_auditor = ($user_role === 'Auditor');
   <?php endif; ?>
 
   <!-- Navigasi Modul - TAMPILKAN SELALU, tapi konten berbeda berdasarkan role -->
-  <div class="card mt-4">
+<div class="card mt-4">
     <h3>📂 Navigasi Modul</h3>
     <div class="module-links">
-      <!-- ASET BARANG - TAMPIL UNTUK SEMUA ROLE -->
-      <a href="<?= base_url('modules/aset_barang/read.php') ?>" class="btn">
-        <i class="fas fa-boxes"></i> Aset Barang
-      </a>
-      
-      <!-- MODUL LAINNYA - HANYA UNTUK ADMIN & OPERATOR -->
-      <?php if (!$is_auditor): ?>
-        <a href="<?= base_url('modules/kendaraan/read.php') ?>" class="btn">
-          <i class="fas fa-car"></i> Kendaraan
-        </a>
-        <a href="<?= base_url('modules/kategori/read.php') ?>" class="btn">
-          <i class="fas fa-tags"></i> Kategori
-        </a>
-        <a href="<?= base_url('modules/lokasi/read.php') ?>" class="btn">
-          <i class="fas fa-map-marker-alt"></i> Lokasi
-        </a>
-        <a href="<?= base_url('modules/program/read.php') ?>" class="btn">
-          <i class="fas fa-money-bill-wave"></i> Program Pendanaan
-        </a>
-        <a href="<?= base_url('modules/notifikasi/read.php') ?>" class="btn">
-          <i class="fas fa-bell"></i> Notifikasi
-        </a>
-      <?php else: ?>
-        <!-- TAMBAHAN UNTUK AUDITOR JIKA PERLU -->
-        <a href="<?= base_url('modules/aset_barang/export.php') ?>" class="btn">
-          <i class="fas fa-file-pdf"></i> Export Laporan
-        </a>
-      <?php endif; ?>
+        <?php if ($is_auditor): ?>
+            <!-- HANYA UNTUK AUDITOR -->
+            <a href="<?= base_url('modules/aset_barang/read.php') ?>" class="btn">
+                <i class="fas fa-boxes"></i> Aset Barang
+            </a>
+            <a href="<?= base_url('modules/aset_barang/export.php') ?>" class="btn">
+                <i class="fas fa-file-pdf"></i> Export Laporan
+            </a>
+            
+        <?php else: ?>
+            <!-- UNTUK ADMIN & OPERATOR -->
+            <a href="<?= base_url('modules/aset_barang/read.php') ?>" class="btn">
+                <i class="fas fa-boxes"></i> Aset Barang
+            </a>
+            <a href="<?= base_url('modules/kendaraan/read.php') ?>" class="btn">
+                <i class="fas fa-car"></i> Kendaraan
+            </a>
+            <a href="<?= base_url('modules/kategori/read.php') ?>" class="btn">
+                <i class="fas fa-tags"></i> Kategori
+            </a>
+            <a href="<?= base_url('modules/lokasi/read.php') ?>" class="btn">
+                <i class="fas fa-map-marker-alt"></i> Lokasi
+            </a>
+            <a href="<?= base_url('modules/program/read.php') ?>" class="btn">
+                <i class="fas fa-money-bill-wave"></i> Program Pendanaan
+            </a>
+            <a href="<?= base_url('modules/notifikasi/read.php') ?>" class="btn">
+                <i class="fas fa-bell"></i> Notifikasi
+            </a>
+        <?php endif; ?>
     </div>
     
     <?php if ($is_auditor): ?>
-      <p style="margin-top: 15px; color: #666; font-style: italic; font-size: 0.9rem;">
-        <i class="fas fa-info-circle"></i> 
-        Role Auditor hanya dapat mengakses modul Aset Barang untuk melihat data dan laporan.
-      </p>
+        <p style="margin-top: 15px; color: #666; font-style: italic; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> 
+            Role Auditor hanya dapat mengakses modul Aset Barang untuk melihat data dan laporan.
+        </p>
     <?php endif; ?>
-  </div>
 </div>
 
 <!-- ========================

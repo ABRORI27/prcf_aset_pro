@@ -88,44 +88,46 @@ $kategori_result = mysqli_query($conn, "SELECT id, nama_kategori FROM kategori_b
     </div>
 
     <nav>
-      <a href="<?= BASE_URL ?>index.php">Dashboard</a>
+  <a href="<?= BASE_URL ?>index.php">Dashboard</a>
 
-      <?php if (has_access([ROLE_ADMIN, ROLE_OPERATOR])): ?>
-        <a href="<?= PATH_MODULES ?>aset_barang/read.php">Aset Barang</a>
-        <a href="<?= PATH_MODULES ?>kendaraan/read.php">Kendaraan</a>
+  <!-- ASET BARANG - Semua Role Bisa Akses -->
+  <a href="<?= PATH_MODULES ?>aset_barang/read.php">Aset Barang</a>
 
-        <!-- 🔽 Dropdown Kategori -->
-        <button class="dropdown-btn" onclick="toggleDropdown(this)">
-          Kategori <span class="arrow">▶</span>
-        </button>
-        <div class="dropdown-container">
-          <a href="<?= PATH_MODULES ?>kategori/read.php">Semua Kategori</a>
-          <?php while ($kat = mysqli_fetch_assoc($kategori_result)): ?>
-            <a href="<?= PATH_MODULES ?>kategori/read.php?filter=<?= $kat['id'] ?>">
-              <?= htmlspecialchars($kat['nama_kategori']) ?>
-            </a>
-          <?php endwhile; ?>
-        </div>
-      <?php endif; ?>
+  <!-- KENDARAAN - Semua Role Bisa Lihat -->
+  <a href="<?= PATH_MODULES ?>kendaraan/read.php">Kendaraan</a>
 
-      <?php if (has_access([ROLE_ADMIN])): ?>
-        <a href="<?= PATH_MODULES ?>program/read.php">Program Pendanaan</a>
-        <a href="<?= PATH_MODULES ?>lokasi/read.php">Lokasi Barang</a>
-        <a href="<?= PATH_MODULES ?>notifikasi/read.php">Notifikasi</a>
-      <?php endif; ?>
+  <?php if (has_access([ROLE_ADMIN, ROLE_OPERATOR])): ?>
+    <!-- KATEGORI - Hanya Admin & Operator Bisa Kelola -->
+    <button class="dropdown-btn" onclick="toggleDropdown(this)">
+      Kategori <span class="arrow">▶</span>
+    </button>
+    <div class="dropdown-container">
+      <a href="<?= PATH_MODULES ?>kategori/read.php">Semua Kategori</a>
+      <?php while ($kat = mysqli_fetch_assoc($kategori_result)): ?>
+        <a href="<?= PATH_MODULES ?>kategori/read.php?filter=<?= $kat['id'] ?>">
+          <?= htmlspecialchars($kat['nama_kategori']) ?>
+        </a>
+      <?php endwhile; ?>
+    </div>
+  <?php endif; ?>
 
-      <?php if (has_access([ROLE_AUDITOR])): ?>
-        <a href="<?= PATH_MODULES ?>laporan/view_laporan.php">Laporan</a>
-      <?php endif; ?>
+  <?php if (has_access([ROLE_ADMIN])): ?>
+    <!-- HANYA ADMIN -->
+    <a href="<?= PATH_MODULES ?>program/read.php">Program Pendanaan</a>
+    <a href="<?= PATH_MODULES ?>lokasi/read.php">Lokasi Barang</a>
+    <a href="<?= PATH_MODULES ?>notifikasi/read.php">Notifikasi</a>
+  <?php endif; ?>
 
-      <a href="<?= BASE_URL ?>logout.php">
-        Logout
-      <span class="role-label">
-        (<?= htmlspecialchars($_SESSION['user']['username'] ?? 'User') ?> - <?= htmlspecialchars($_SESSION['user']['role'] ?? '-') ?>)
-  </span>
-</a>
+  <!-- LAPORAN - Semua Role -->
+  <a href="<?= PATH_MODULES ?>laporan/view_laporan.php">Laporan</a>
 
-    </nav>
+  <a href="<?= BASE_URL ?>logout.php">
+    Logout
+    <span class="role-label">
+      (<?= htmlspecialchars($_SESSION['user']['username'] ?? 'User') ?> - <?= htmlspecialchars($_SESSION['user']['role'] ?? '-') ?>)
+    </span>
+  </a>
+</nav>
   </aside>
 
   <main class="main">
