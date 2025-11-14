@@ -389,14 +389,14 @@ $bulan_filter = $_GET['bulan'] ?? '';
       </div>
 
       <!-- Tombol Aksi -->
-      <?php if (has_access(['Admin'])): ?>
+      <?php if (has_access(['admin'])): ?>
         <a href="create.php" class="btn btn-icon" title="Tambah Aset Baru">
           <i class="fas fa-plus"></i>
           <span class="btn-text">Tambah</span>
         </a>
       <?php endif; ?>
 
-      <?php if (has_access(['Admin', 'Auditor'])): 
+      <?php if (has_access(['admin', 'auditor'])): 
         // Build query string untuk filter
         $export_params = [];
         if ($tahun_filter) $export_params['tahun'] = $tahun_filter;
