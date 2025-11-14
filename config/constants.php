@@ -22,11 +22,11 @@ define('BASE_URL', 'http://localhost/prcf_aset_pro/');
 date_default_timezone_set('Asia/Jakarta');
 
 // ==========================
-// 🔐 User Roles
+// 🔐 User Roles - SESUAIKAN DENGAN DATABASE (huruf kecil)
 // ==========================
-define('ROLE_ADMIN', 'admin');
-define('ROLE_OPERATOR', 'operator');
-define('ROLE_AUDITOR', 'auditor');
+define('ROLE_ADMIN', 'admin');        // ✅ Huruf kecil (sesuai enum di database)
+define('ROLE_OPERATOR', 'operator');  // ✅ Huruf kecil (sesuai enum di database)  
+define('ROLE_AUDITOR', 'auditor');    // ✅ Huruf kecil (sesuai enum di database)
 
 // ==========================
 // 📦 Aset Status

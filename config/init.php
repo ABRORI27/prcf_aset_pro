@@ -54,6 +54,18 @@ if (!function_exists('e')) {
     }
 }
 
+// 🔐 TAMBAHKAN FUNGSI HAS_ACCESS DI SINI
+if (!function_exists('has_access')) {
+    function has_access($allowed_roles = []) {
+        if (!isset($_SESSION['user']['role'])) {
+            return false;
+        }
+        $current_role = $_SESSION['user']['role'];
+        $allowed_roles = is_array($allowed_roles) ? $allowed_roles : [$allowed_roles];
+        return in_array($current_role, $allowed_roles);
+    }
+}
+
 // 7️⃣ Path constants (memudahkan include modular)
 define('INCLUDES_PATH', realpath(__DIR__));
 define('MODULES_PATH', realpath(__DIR__ . '/../modules'));
