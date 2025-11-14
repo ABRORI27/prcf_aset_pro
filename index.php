@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
-require_once __DIR__ . '/includes/koneksi.php';
+require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/config/init.php';
 require_once __DIR__ . '/includes/header.php';
 
@@ -23,6 +23,10 @@ $pajak_due = mysqli_query($conn, "
   WHERE k.tanggal_pajak BETWEEN '$today' AND '$limit'
   ORDER BY k.tanggal_pajak ASC
 ");
+
+// Cek role user
+$user_role = $_SESSION['user']['role'] ?? '';
+$is_auditor = ($user_role === 'Auditor');
 ?>
 
 <div class="page dashboard">
@@ -38,54 +42,87 @@ $pajak_due = mysqli_query($conn, "
     <div class="card stat"><h3><?= $aktif_aset ?></h3><p>Aset Aktif</p></div>
     <div class="card stat"><h3><?= $rusak_aset ?></h3><p>Aset Rusak / Hilang</p></div>
     <div class="card stat"><h3><?= $total_kendaraan ?></h3><p>Kendaraan Terdaftar</p></div>
-    <div class="card stat"><h3><?= $notif_pending ?></h3><p>Notifikasi Belum Terkirim</p></div>
+    <?php if (!$is_auditor): ?>
+      <div class="card stat"><h3><?= $notif_pending ?></h3><p>Notifikasi Belum Terkirim</p></div>
+    <?php endif; ?>
   </div>
 
   <!-- Reminder Pajak -->
-  <div class="card mt-4 reminder-card">
-    <h3>🚗 Pajak Kendaraan Mendekati Jatuh Tempo</h3>
-    <div class="reminder-content">
-      <?php if (mysqli_num_rows($pajak_due) == 0): ?>
-        <p>Tidak ada kendaraan dengan pajak mendekati jatuh tempo dalam 7 hari ke depan.</p>
-      <?php else: ?>
-        <table class="table pajak-table">
-          <thead>
-            <tr>
-              <th>Nama Kendaraan</th>
-              <th>Nomor Plat</th>
-              <th>Tanggal Pajak</th>
-              <th>Penanggung Jawab</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php while ($row = mysqli_fetch_assoc($pajak_due)):
-              $diff = (new DateTime())->diff(new DateTime($row['tanggal_pajak']))->days;
-              $color = ($diff <= 3) ? 'red' : 'yellow';
-            ?>
-            <tr>
-              <td><?= e($row['nama_barang']) ?></td>
-              <td><?= e($row['nomor_plat']) ?></td>
-              <td><span class="alert <?= $color ?>"><?= e($row['tanggal_pajak']) ?></span></td>
-              <td><?= e($row['penanggung_jawab']) ?></td>
-            </tr>
-            <?php endwhile; ?>
-          </tbody>
-        </table>
-      <?php endif; ?>
+  <?php if (!$is_auditor): ?>
+    <div class="card mt-4 reminder-card">
+      <h3>🚗 Pajak Kendaraan Mendekati Jatuh Tempo</h3>
+      <div class="reminder-content">
+        <?php if (mysqli_num_rows($pajak_due) == 0): ?>
+          <p>Tidak ada kendaraan dengan pajak mendekati jatuh tempo dalam 7 hari ke depan.</p>
+        <?php else: ?>
+          <table class="table pajak-table">
+            <thead>
+              <tr>
+                <th>Nama Kendaraan</th>
+                <th>Nomor Plat</th>
+                <th>Tanggal Pajak</th>
+                <th>Penanggung Jawab</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php while ($row = mysqli_fetch_assoc($pajak_due)):
+                $diff = (new DateTime())->diff(new DateTime($row['tanggal_pajak']))->days;
+                $color = ($diff <= 3) ? 'red' : 'yellow';
+              ?>
+              <tr>
+                <td><?= e($row['nama_barang']) ?></td>
+                <td><?= e($row['nomor_plat']) ?></td>
+                <td><span class="alert <?= $color ?>"><?= e($row['tanggal_pajak']) ?></span></td>
+                <td><?= e($row['penanggung_jawab']) ?></td>
+              </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
+        <?php endif; ?>
+      </div>
     </div>
-  </div>
+  <?php endif; ?>
 
-  <!-- Navigasi Modul -->
+  <!-- Navigasi Modul - TAMPILKAN SELALU, tapi konten berbeda berdasarkan role -->
   <div class="card mt-4">
     <h3>📂 Navigasi Modul</h3>
     <div class="module-links">
-      <a href="<?= base_url('modules/aset_barang/read.php') ?>" class="btn">Aset Barang</a>
-      <a href="<?= base_url('modules/kendaraan/read.php') ?>" class="btn">Kendaraan</a>
-      <a href="<?= base_url('modules/kategori/read.php') ?>" class="btn">Kategori</a>
-      <a href="<?= base_url('modules/lokasi/read.php') ?>" class="btn">Lokasi</a>
-      <a href="<?= base_url('modules/program/read.php') ?>" class="btn">Program Pendanaan</a>
-      <a href="<?= base_url('modules/notifikasi/read.php') ?>" class="btn">Notifikasi</a>
+      <!-- ASET BARANG - TAMPIL UNTUK SEMUA ROLE -->
+      <a href="<?= base_url('modules/aset_barang/read.php') ?>" class="btn">
+        <i class="fas fa-boxes"></i> Aset Barang
+      </a>
+      
+      <!-- MODUL LAINNYA - HANYA UNTUK ADMIN & OPERATOR -->
+      <?php if (!$is_auditor): ?>
+        <a href="<?= base_url('modules/kendaraan/read.php') ?>" class="btn">
+          <i class="fas fa-car"></i> Kendaraan
+        </a>
+        <a href="<?= base_url('modules/kategori/read.php') ?>" class="btn">
+          <i class="fas fa-tags"></i> Kategori
+        </a>
+        <a href="<?= base_url('modules/lokasi/read.php') ?>" class="btn">
+          <i class="fas fa-map-marker-alt"></i> Lokasi
+        </a>
+        <a href="<?= base_url('modules/program/read.php') ?>" class="btn">
+          <i class="fas fa-money-bill-wave"></i> Program Pendanaan
+        </a>
+        <a href="<?= base_url('modules/notifikasi/read.php') ?>" class="btn">
+          <i class="fas fa-bell"></i> Notifikasi
+        </a>
+      <?php else: ?>
+        <!-- TAMBAHAN UNTUK AUDITOR JIKA PERLU -->
+        <a href="<?= base_url('modules/aset_barang/export.php') ?>" class="btn">
+          <i class="fas fa-file-pdf"></i> Export Laporan
+        </a>
+      <?php endif; ?>
     </div>
+    
+    <?php if ($is_auditor): ?>
+      <p style="margin-top: 15px; color: #666; font-style: italic; font-size: 0.9rem;">
+        <i class="fas fa-info-circle"></i> 
+        Role Auditor hanya dapat mengakses modul Aset Barang untuk melihat data dan laporan.
+      </p>
+    <?php endif; ?>
   </div>
 </div>
 
@@ -176,9 +213,13 @@ body.dark-mode .table td {
   text-decoration: none;
   transition: 0.25s;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .module-links .btn:hover {
   background: var(--primary-dark);
+  transform: translateY(-2px);
 }
 
 /* Alert Colors */
@@ -204,6 +245,12 @@ body.dark-mode,
 body:not(.light-mode) {
   background: var(--bg-dark);
   color: var(--text-light);
+}
+
+/* Info text untuk Auditor */
+.card p i {
+  margin-right: 5px;
+  color: #2b6b4f;
 }
 
 </style>

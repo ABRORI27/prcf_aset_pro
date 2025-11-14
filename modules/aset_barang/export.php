@@ -83,11 +83,6 @@ if (!empty($where)) {
     $whereSql = 'WHERE ' . implode(' AND ', $where);
 }
 
-// --- DEBUG: Tampilkan query untuk testing (hapus di production)
-error_log("Export Query: " . $sql);
-error_log("Where Conditions: " . $whereSql);
-error_log("Parameters: " . print_r($params, true));
-
 // --- Query data dengan filter
 $sql = "
   SELECT ab.*,
