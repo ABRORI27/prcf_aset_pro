@@ -2,14 +2,6 @@
 include '../../includes/header.php';
 include '../../config/db.php';
 
-// 🔐 CEK AKSES - Hanya Admin & Operator
-if (!has_access([ROLE_ADMIN, ROLE_OPERATOR])) {
-    $_SESSION['error'] = "Anda tidak memiliki akses ke modul ini.";
-    header('Location: ' . BASE_URL . 'index.php');
-    exit();
-}
-
-
 $nomor_seri = $_GET['nomor_seri'] ?? null;
 
 if (!$nomor_seri) {
