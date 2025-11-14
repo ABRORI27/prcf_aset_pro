@@ -9,17 +9,22 @@ ob_start();
 // Include TCPDF
 require_once('../../assets/tcpdf/tcpdf.php');
 
-// --- Ambil parameter filter
+// --- Ambil SEMUA parameter filter dari URL
 $search = $_GET['search'] ?? '';
 $kategori = isset($_GET['kategori']) ? (int)$_GET['kategori'] : 0;
 $tahun_filter = $_GET['tahun'] ?? '';
 $bulan_filter = $_GET['bulan'] ?? '';
+$filter_nama = $_GET['nama'] ?? '';
+$filter_kondisi = $_GET['kondisi'] ?? '';
+$filter_lokasi = $_GET['lokasi'] ?? '';
+$filter_program = $_GET['program'] ?? '';
 
-// --- Bangun klausa WHERE dinamis
+// --- Bangun klausa WHERE dinamis dengan SEMUA filter
 $where = [];
 $params = [];
 $types = '';
 
+// Filter pencarian global
 if (!empty($search)) {
     $where[] = "(ab.nama_barang LIKE ? OR ab.deskripsi LIKE ? OR k.nama_kategori LIKE ? OR l.nama_lokasi LIKE ? OR p.nama_program LIKE ? OR ab.kondisi_barang LIKE ? OR ab.penanggung_jawab LIKE ?)";
     $search_term = "%$search%";
@@ -27,12 +32,14 @@ if (!empty($search)) {
     $types .= str_repeat('s', 7);
 }
 
+// Filter kategori
 if ($kategori > 0) {
     $where[] = "ab.kategori_barang = ?";
     $params[] = $kategori;
     $types .= 'i';
 }
 
+// Filter periode
 if ($tahun_filter) {
     $where[] = "ab.periode_tahun = ?";
     $params[] = $tahun_filter;
@@ -45,13 +52,43 @@ if ($bulan_filter) {
     $types .= 'i';
 }
 
+// Filter dari dropdown
+if (!empty($filter_nama)) {
+    $where[] = "ab.nama_barang LIKE ?";
+    $params[] = "%$filter_nama%";
+    $types .= 's';
+}
+
+if (!empty($filter_kondisi)) {
+    $where[] = "ab.kondisi_barang = ?";
+    $params[] = $filter_kondisi;
+    $types .= 's';
+}
+
+if (!empty($filter_lokasi)) {
+    $where[] = "l.nama_lokasi LIKE ?";
+    $params[] = "%$filter_lokasi%";
+    $types .= 's';
+}
+
+if (!empty($filter_program)) {
+    $where[] = "p.nama_program LIKE ?";
+    $params[] = "%$filter_program%";
+    $types .= 's';
+}
+
 // Gabungkan jadi satu string WHERE
 $whereSql = '';
 if (!empty($where)) {
     $whereSql = 'WHERE ' . implode(' AND ', $where);
 }
 
-// --- Query data
+// --- DEBUG: Tampilkan query untuk testing (hapus di production)
+error_log("Export Query: " . $sql);
+error_log("Where Conditions: " . $whereSql);
+error_log("Parameters: " . print_r($params, true));
+
+// --- Query data dengan filter
 $sql = "
   SELECT ab.*,
         k.nama_kategori,
@@ -90,7 +127,7 @@ while ($r = mysqli_fetch_assoc($result)) {
 
 // --- Cek jika data kosong
 if (empty($rows)) {
-    die("<script>alert('Tidak ada data untuk diexport.'); window.history.back();</script>");
+    die("<script>alert('Tidak ada data untuk diexport dengan filter yang dipilih.'); window.history.back();</script>");
 }
 
 // --- Buat PDF dengan TCPDF
@@ -98,7 +135,7 @@ class MYPDF extends TCPDF {
     // Page header
     public function Header() {
         // Logo PRCF
-        $image_file = '../../assets/img/prcf_logo.png'; // Sesuaikan path logo
+        $image_file = '../../assets/img/prcf_logo.png';
         if (file_exists($image_file)) {
             $this->Image($image_file, 10, 10, 25, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         }
@@ -128,7 +165,7 @@ class MYPDF extends TCPDF {
 }
 
 // Create new PDF document
-$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf = new MYPDF('L', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // Set document information
 $pdf->SetCreator('PRCF Indonesia');
@@ -158,15 +195,16 @@ $pdf->SetAutoPageBreak(TRUE, 25);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Add a page
-$pdf->AddPage('L'); // Landscape orientation
+$pdf->AddPage('L');
 
 // Set font for content
 $pdf->SetFont('helvetica', '', 9);
 
-// Informasi Filter
-$filter_info = "Filter: ";
+// --- INFORMASI FILTER DETAIL ---
+$filter_info = "DATA TERFILTER: ";
+
 $filters = [];
-if (!empty($search)) $filters[] = "Pencarian: " . $search;
+if (!empty($search)) $filters[] = "Pencarian: '" . htmlspecialchars($search) . "'";
 if ($kategori > 0) {
     $kategori_name = mysqli_fetch_assoc($conn->query("SELECT nama_kategori FROM kategori_barang WHERE id = $kategori"));
     $filters[] = "Kategori: " . ($kategori_name['nama_kategori'] ?? '');
@@ -174,13 +212,17 @@ if ($kategori > 0) {
 if ($tahun_filter) $filters[] = "Tahun: " . $tahun_filter;
 if ($bulan_filter) {
     $bulan_list = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
-    $filters[] = "Bulan: " . $bulan_list[$bulan_filter];
+    $filters[] = "Bulan: " . ($bulan_list[$bulan_filter] ?? $bulan_filter);
 }
+if (!empty($filter_nama)) $filters[] = "Nama Barang: '" . htmlspecialchars($filter_nama) . "'";
+if (!empty($filter_kondisi)) $filters[] = "Kondisi: " . htmlspecialchars($filter_kondisi);
+if (!empty($filter_lokasi)) $filters[] = "Lokasi: '" . htmlspecialchars($filter_lokasi) . "'";
+if (!empty($filter_program)) $filters[] = "Program: '" . htmlspecialchars($filter_program) . "'";
 
 if (empty($filters)) {
-    $filter_info .= "Semua Data";
+    $filter_info = "SEMUA DATA (Tidak ada filter aktif)";
 } else {
-    $filter_info .= implode(", ", $filters);
+    $filter_info .= implode(" | ", $filters);
 }
 
 $pdf->SetFont('helvetica', 'B', 10);
@@ -241,7 +283,7 @@ foreach($rows as $row) {
     $pdf->Cell($widths[4], 6, substr($row['nama_lokasi'] ?? '-', 0, 15), 'LR', 0, 'L', true);
     $pdf->Cell($widths[5], 6, substr($row['nama_program'] ?? '-', 0, 20), 'LR', 0, 'L', true);
     $pdf->Cell($widths[6], 6, $row['jumlah_unit'], 'LR', 0, 'C', true);
-    $pdf->Cell($widths[7], 6, 'Rp '.number_format($harga, 0, ',', '.'), 'LR', 0, 'R', true);
+    $pdf->Cell($widths[7], 6, $harga > 0 ? 'Rp '.number_format($harga, 0, ',', '.') : '-', 'LR', 0, 'R', true);
     $pdf->Cell($widths[8], 6, $row['periode_display'] ?? '-', 'LR', 0, 'C', true);
     $pdf->Ln();
     
@@ -259,7 +301,7 @@ $pdf->Cell(0, 6, 'JUMLAH ITEM: ' . count($rows), 0, 1, 'R');
 
 // Close and output PDF
 $filename = 'Laporan_Aset_PRCF_' . date('Y-m-d_H-i-s') . '.pdf';
-$pdf->Output($filename, 'D'); // 'D' untuk download
+$pdf->Output($filename, 'D');
 
 exit;
 ?>

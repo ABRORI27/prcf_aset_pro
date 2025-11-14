@@ -217,13 +217,29 @@ $bulan_filter = $_GET['bulan'] ?? '';
         <a href="create.php" class="btn">+ Tambah Aset</a>
       <?php endif; ?>
 
-      <?php if (has_access(['Admin', 'Auditor'])): ?>
-        <a href="export.php?tahun=<?= $tahun_filter ?>&bulan=<?= $bulan_filter ?>" class="btn">Export PDF</a>
-      <?php endif; ?>
-
-      <input type="text" id="searchInput" onkeyup="filterGlobal()" placeholder="Cari aset...">
-    </div>
-  </div>
+     <?php
+// Di bagian actions, ganti link export menjadi:
+if (has_access(['Admin', 'Auditor'])): 
+    // Build query string untuk filter
+    $export_params = [];
+    if ($tahun_filter) $export_params['tahun'] = $tahun_filter;
+    if ($bulan_filter) $export_params['bulan'] = $bulan_filter;
+    
+    // Tambahkan juga filter dari dropdown jika ada
+    $current_filters = [
+        'search' => $_GET['search'] ?? '',
+        'kategori' => $_GET['kategori'] ?? '',
+        'nama' => $_GET['nama'] ?? '',
+        'kondisi' => $_GET['kondisi'] ?? '',
+        'lokasi' => $_GET['lokasi'] ?? '',
+        'program' => $_GET['program'] ?? ''
+    ];
+    
+    $export_params = array_merge($export_params, array_filter($current_filters));
+    $export_query = http_build_query($export_params);
+?>
+    <a href="export.php?<?= $export_query ?>" class="btn">Export PDF</a>
+<?php endif; ?>
 
   <?php if ($tahun_filter || $bulan_filter): ?>
     <div class="periode-info">
