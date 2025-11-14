@@ -1,6 +1,10 @@
 <?php
 include '../../includes/auth_check.php';
 include '../../config/db.php';
+
+// Ambil parameter filter periode dari URL
+$tahun_filter = $_GET['tahun'] ?? '';
+$bulan_filter = $_GET['bulan'] ?? '';
 ?>
 
 <!doctype html>
@@ -12,8 +16,8 @@ include '../../config/db.php';
   <style>
     /* === Mode Terang Paksa untuk Halaman Ini === */
     body, .page {
-      background-color: #f9f9f9 !important; /* latar abu muda terang */
-      color: #102a23 !important; /* teks gelap */
+      background-color: #f9f9f9 !important;
+      color: #102a23 !important;
     }
 
     .header {
@@ -37,6 +41,35 @@ include '../../config/db.php';
       display: flex;
       gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Filter Periode */
+    .filter-periode {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .filter-periode select, .filter-periode button {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .filter-periode button {
+      background: #2b6b4f;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .filter-periode button:hover {
+      background: #1f4e3a;
     }
 
     /* Tombol */
@@ -107,7 +140,7 @@ include '../../config/db.php';
     }
 
     .table th {
-      background-color: #f5f5f5 !important; /* abu muda untuk header */
+      background-color: #f5f5f5 !important;
       font-weight: bold;
     }
 
@@ -116,13 +149,22 @@ include '../../config/db.php';
     }
 
     .table tr:hover {
-      background-color: #e8f5e9 !important; /* hijau lembut saat hover */
+      background-color: #e8f5e9 !important;
     }
 
     .icon-btn {
       text-decoration: none;
       font-size: 16px;
       margin-right: 6px;
+    }
+
+    .periode-info {
+      background: #e8f5e9;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-weight: bold;
+      color: #2b6b4f;
     }
   </style>
 </head>
@@ -134,6 +176,41 @@ include '../../config/db.php';
     </div>
 
     <div class="actions">
+      <!-- Filter Periode -->
+      <form method="GET" class="filter-periode">
+        <select name="tahun" id="filterTahun">
+          <option value="">Semua Tahun</option>
+          <?php
+          // Ambil tahun unik dari database
+          $tahun_query = $conn->query("SELECT DISTINCT periode_tahun FROM aset_barang WHERE periode_tahun IS NOT NULL ORDER BY periode_tahun DESC");
+          while ($tahun = $tahun_query->fetch_assoc()) {
+            $selected = $tahun_filter == $tahun['periode_tahun'] ? 'selected' : '';
+            echo "<option value='{$tahun['periode_tahun']}' $selected>{$tahun['periode_tahun']}</option>";
+          }
+          ?>
+        </select>
+
+        <select name="bulan" id="filterBulan">
+          <option value="">Semua Bulan</option>
+          <?php
+          $bulan_list = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+          ];
+          foreach ($bulan_list as $num => $nama) {
+            $selected = $bulan_filter == $num ? 'selected' : '';
+            echo "<option value='$num' $selected>$nama</option>";
+          }
+          ?>
+        </select>
+
+        <button type="submit">Filter</button>
+        <?php if ($tahun_filter || $bulan_filter): ?>
+          <a href="read.php" class="btn btn-secondary">Reset</a>
+        <?php endif; ?>
+      </form>
+
       <a href="../../index.php" class="btn btn-secondary">⬅ Kembali ke Dashboard</a>
 
       <?php if (has_access(['Admin'])): ?>
@@ -141,12 +218,21 @@ include '../../config/db.php';
       <?php endif; ?>
 
       <?php if (has_access(['Admin', 'Auditor'])): ?>
-        <a href="export.php" class="btn">Export Excel</a>
+        <a href="export.php?tahun=<?= $tahun_filter ?>&bulan=<?= $bulan_filter ?>" class="btn">Export PDF</a>
       <?php endif; ?>
 
       <input type="text" id="searchInput" onkeyup="filterGlobal()" placeholder="Cari aset...">
     </div>
   </div>
+
+  <?php if ($tahun_filter || $bulan_filter): ?>
+    <div class="periode-info">
+      🔍 Menampilkan data: 
+      <?= $bulan_filter ? $bulan_list[$bulan_filter] . ' ' : '' ?>
+      <?= $tahun_filter ?: '' ?>
+      <?= !$tahun_filter && !$bulan_filter ? 'Semua Periode' : '' ?>
+    </div>
+  <?php endif; ?>
 
   <div class="table-container">
     <table class="table" id="tabelAset">
@@ -157,26 +243,67 @@ include '../../config/db.php';
           <th>Kategori<br><select id="filterKategori" class="filter-select" onchange="filterColumn(2)"><option value="">Semua</option></select></th>
           <th>Kondisi<br><select id="filterKondisi" class="filter-select" onchange="filterColumn(3)"><option value="">Semua</option></select></th>
           <th>Lokasi<br><select id="filterLokasi" class="filter-select" onchange="filterColumn(4)"><option value="">Semua</option></select></th>
-          <th>Program Pendanaan<br><select id="filterProgram" class="filter-select" onchange="filterColumn(5)"><option value="">Semua</option></select></th>
+          <th>Program<br><select id="filterProgram" class="filter-select" onchange="filterColumn(5)"><option value="">Semua</option></select></th>
+          <th>Periode<br><select id="filterPeriode" class="filter-select" onchange="filterColumn(6)"><option value="">Semua</option></select></th>
           <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
 <?php
-$no = 1;
+// Build query dengan filter periode
+$where_conditions = [];
+$params = [];
+$types = '';
+
+if ($tahun_filter) {
+    $where_conditions[] = "ab.periode_tahun = ?";
+    $params[] = $tahun_filter;
+    $types .= 'i';
+}
+
+if ($bulan_filter) {
+    $where_conditions[] = "ab.periode_bulan = ?";
+    $params[] = $bulan_filter;
+    $types .= 'i';
+}
+
+$where_sql = '';
+if (!empty($where_conditions)) {
+    $where_sql = "WHERE " . implode(' AND ', $where_conditions);
+}
+
 $query = "
   SELECT ab.*,
         k.nama_kategori,
         l.nama_lokasi,
-        p.nama_program
+        p.nama_program,
+        CONCAT(
+          CASE WHEN ab.periode_bulan IS NOT NULL THEN 
+            CASE ab.periode_bulan 
+              WHEN 1 THEN 'Januari' WHEN 2 THEN 'Februari' WHEN 3 THEN 'Maret' WHEN 4 THEN 'April'
+              WHEN 5 THEN 'Mei' WHEN 6 THEN 'Juni' WHEN 7 THEN 'Juli' WHEN 8 THEN 'Agustus'
+              WHEN 9 THEN 'September' WHEN 10 THEN 'Oktober' WHEN 11 THEN 'November' WHEN 12 THEN 'Desember'
+            END 
+          ELSE '' END,
+          CASE WHEN ab.periode_bulan IS NOT NULL AND ab.periode_tahun IS NOT NULL THEN ' ' ELSE '' END,
+          CASE WHEN ab.periode_tahun IS NOT NULL THEN ab.periode_tahun ELSE '' END
+        ) as periode_display
   FROM aset_barang ab
   LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
   LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
   LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
-  ORDER BY ab.id DESC
+  $where_sql
+  ORDER BY ab.periode_tahun DESC, ab.periode_bulan DESC, ab.id DESC
 ";
-$result = mysqli_query($conn, $query);
 
+$stmt = $conn->prepare($query);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+
+$no = 1;
 while ($row = mysqli_fetch_assoc($result)) {
   echo "<tr>
     <td>{$no}</td>
@@ -185,6 +312,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     <td>{$row['kondisi_barang']}</td>
     <td>" . ($row['nama_lokasi'] ?? '-') . "</td>
     <td>" . ($row['nama_program'] ?? '-') . "</td>
+    <td>" . ($row['periode_display'] ?? '-') . "</td>
     <td class='aksi-ikon'>";
 
   if (has_access(['Admin', 'Operator'])) {
@@ -229,7 +357,8 @@ function filterColumn() {
     document.getElementById("filterKategori"),
     document.getElementById("filterKondisi"),
     document.getElementById("filterLokasi"),
-    document.getElementById("filterProgram")
+    document.getElementById("filterProgram"),
+    document.getElementById("filterPeriode")
   ];
 
   for (let i = 1; i < rows.length; i++) {
@@ -249,13 +378,14 @@ function filterColumn() {
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("tabelAset");
   const rows = table.getElementsByTagName("tr");
-  const columns = [1, 2, 3, 4, 5];
+  const columns = [1, 2, 3, 4, 5, 6]; // Tambah kolom 6 untuk periode
   const selects = [
     document.getElementById("filterNama"),
     document.getElementById("filterKategori"),
     document.getElementById("filterKondisi"),
     document.getElementById("filterLokasi"),
-    document.getElementById("filterProgram")
+    document.getElementById("filterProgram"),
+    document.getElementById("filterPeriode")
   ];
 
   columns.forEach((col, idx) => {

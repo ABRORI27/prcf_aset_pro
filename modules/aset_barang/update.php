@@ -99,6 +99,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Waktu Perolehan</label>
         <input type="date" name="waktu_perolehan" value="<?= $aset['waktu_perolehan'] ?>">
 
+        <!-- // Di bagian form, tambahkan setelah field waktu_perolehan: -->
+        <label>Periode Tahun</label>
+        <input type="number" name="periode_tahun" value="<?= $aset['periode_tahun'] ?>" min="2000" max="2030">
+
+        <label>Periode Bulan</label>
+        <select name="periode_bulan">
+            <option value="">-- Pilih Bulan --</option>
+            <?php
+                $bulan_list = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ];
+            foreach ($bulan_list as $num => $nama) {
+                $selected = $aset['periode_bulan'] == $num ? 'selected' : '';
+                echo "<option value='$num' $selected>$nama</option>";
+    }
+    ?>
+</select>
+
         <label>Lokasi Barang</label>
         <input type="text" name="lokasi_barang" value="<?= $aset['lokasi_barang'] ?>">
 
