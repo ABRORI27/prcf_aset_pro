@@ -3,7 +3,7 @@ include '../../includes/header.php';
 include '../../config/db.php';
 include '../../includes/auth_check.php';
 
-if (!has_access(['Admin', 'Auditor'])) {
+if (!has_access(['admin', 'auditor'])) {
   echo "<script>alert('Anda tidak memiliki izin untuk melihat detail aset!');window.location='" . BASE_URL . "modules/aset_barang/read.php';</script>";
   exit;
 }

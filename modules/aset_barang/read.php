@@ -517,7 +517,7 @@ $bulan_filter = $_GET['bulan'] ?? '';
               <td>" . ($row['periode_display'] ?? '-') . "</td>
               <td class='aksi-ikon' style='text-align: center;'>";
 
-            if (has_access(['Admin', 'Operator'])) {
+            if (has_access(['admin', 'operator'])) {
               echo "
                 <a href='update.php?id={$row['id']}' class='icon-btn edit-btn' title='Edit Data'>
                   <i class='fas fa-edit'></i>
@@ -528,7 +528,7 @@ $bulan_filter = $_GET['bulan'] ?? '';
               ";
             }
 
-            if (has_access(['Admin', 'Auditor'])) {
+            if (has_access(['admin', 'auditor'])) {
               echo "<a href='detail.php?id={$row['id']}' class='icon-btn detail-btn' title='Lihat Detail'>
                       <i class='fas fa-eye'></i>
                     </a>";
