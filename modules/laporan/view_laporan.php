@@ -99,6 +99,7 @@ include '../../config/db.php';
       body { background: white; color: black; }
       table { border: 1px solid #000; }
       th, td { border: 1px solid #000; }
+      .tanggal-col { display: none; }
     }
   </style>
 </head>
@@ -116,7 +117,7 @@ include '../../config/db.php';
     <form method="GET" class="filter-bar no-print">
       <!-- Nama Barang -->
       <label for="nama_barang">Nama Barang:</label>
-      <select name="nama_barang" id="nama_barang">
+      <select name="nama_barang" id="nama_barang" onchange="this.form.submit()">
         <option value="">Semua</option>
         <?php
         $nama = mysqli_query($conn, "SELECT DISTINCT nama_barang FROM aset_barang ORDER BY nama_barang");
@@ -129,7 +130,7 @@ include '../../config/db.php';
 
       <!-- Kategori -->
       <label for="kategori">Kategori:</label>
-      <select name="kategori" id="kategori">
+      <select name="kategori" id="kategori" onchange="this.form.submit()">
         <option value="">Semua</option>
         <?php
         $kategori = mysqli_query($conn, "SELECT * FROM kategori_barang ORDER BY nama_kategori");
@@ -142,7 +143,7 @@ include '../../config/db.php';
 
       <!-- Kondisi -->
       <label for="kondisi">Kondisi:</label>
-      <select name="kondisi" id="kondisi">
+      <select name="kondisi" id="kondisi" onchange="this.form.submit()">
         <option value="">Semua</option>
         <?php
         $enumKondisi = [
@@ -164,7 +165,7 @@ include '../../config/db.php';
 
       <!-- Lokasi -->
       <label for="lokasi">Lokasi:</label>
-      <select name="lokasi" id="lokasi">
+      <select name="lokasi" id="lokasi" onchange="this.form.submit()">
         <option value="">Semua</option>
         <?php
         $lokasi = mysqli_query($conn, "SELECT * FROM lokasi_barang ORDER BY nama_lokasi");
@@ -177,7 +178,7 @@ include '../../config/db.php';
 
       <!-- Program Pendanaan -->
       <label for="program">Program:</label>
-      <select name="program" id="program">
+      <select name="program" id="program" onchange="this.form.submit()">
         <option value="">Semua</option>
         <?php
         $program = mysqli_query($conn, "SELECT * FROM program_pendanaan ORDER BY nama_program");
@@ -187,7 +188,7 @@ include '../../config/db.php';
         }
         ?>
       </select>
-        <button type="submit" class="btn">🔍 Filter</button>
+        <!-- <button type="submit" class="btn">🔍 Filter</button> -->
     </form>
 
     <table>
@@ -199,7 +200,7 @@ include '../../config/db.php';
           <th>Kondisi</th>
           <th>Lokasi</th>
           <th>Program Pendanaan</th>
-          <th>Tanggal Input</th>
+          <th class="tanggal-col">Tanggal Input</th>
         </tr>
       </thead>
       <tbody>
@@ -238,7 +239,7 @@ include '../../config/db.php';
               <td>{$row['kondisi_barang']}</td>
               <td>".($row['nama_lokasi'] ?? '-')."</td>
               <td>".($row['nama_program'] ?? '-')."</td>
-              <td>".date('d-m-Y', strtotime($row['created_at'] ?? 'now'))."</td>
+              <td class='tanggal-col'>".date('d-m-Y', strtotime($row['created_at'] ?? 'now'))."</td>
             </tr>";
             $no++;
           }
