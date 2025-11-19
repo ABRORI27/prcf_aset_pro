@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal_pajak     = $_POST['tanggal_pajak'] ?? null;
     $penanggung_jawab  = $_POST['penanggung_jawab'] ?? null;
 
-    // Hanya kategori Kendaraan (4) dan Field Equipment (5) yang simpan field kendaraan
-    if (!in_array($kategori_barang, [4,5])) {
+    // ✅ PERBAIKAN: Hanya kategori Kendaraan (id=4) yang simpan field kendaraan
+    if ($kategori_barang != 4) { // Hanya id 4 (Kendaraan)
         $nomor_plat = null;
         $tanggal_pajak = null;
         $penanggung_jawab = null;
@@ -155,10 +155,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Furniture Kantor</option>
             <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Field Equipment</option>
             <option value="4" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
-            <option value="5" <?= $aset['kategori_barang']==5?'selected':'' ?>>Field Equipment (Kendaraan)</option>
-            <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Fire Equipment</option>
-            <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Office Equipment</option>
-            <option value="8" <?= $aset['kategori_barang']==8?'selected':'' ?>>Peralatan Lapangan</option>
+            <option value="5" <?= $aset['kategori_barang']==5?'selected':'' ?>>Fire Equipment</option>
+            <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Office Equipment</option>
+            <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Peralatan Lapangan</option>
         </select>
 
         <!-- Field tambahan Kendaraan / Field Equipment -->

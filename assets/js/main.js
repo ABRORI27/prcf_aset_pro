@@ -94,7 +94,7 @@ function filterTable(id, q) {
 
 // === FIELD TAMBAHAN UNTUK KENDARAAN ===
 function toggleKendaraanFields() {
-  const kategori = document.getElementById("kategori_barang")?.value;
-  const el = document.getElementById("kendaraanFields");
-  if (el) el.style.display = kategori == 4 ? "block" : "none";
+    const kategori = document.getElementById('kategori_barang').value;
+    // ✅ PERBAIKAN: Hanya tampilkan untuk kategori Kendaraan (id=4)
+    document.getElementById('kendaraanFields').style.display = (kategori == 4) ? 'block' : 'none';
 }
