@@ -44,9 +44,9 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
   <div class="header">
     <h2>Data Kendaraan</h2>
     <?php if (!$is_auditor): ?>
-      <!-- TOMBOL TAMBAH HANYA UNTUK ADMIN & OPERATOR -->
-      <a href="create.php" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Tambah Kendaraan
+      <!-- TOMBOL TAMBAH HANYA UNTUK ADMIN & OPERATOR - HANYA ICON PLUS -->
+      <a href="create.php" class="btn btn-primary btn-icon" title="Tambah Kendaraan">
+        <i class="fas fa-plus"></i>
       </a>
     <?php else: ?>
       <!-- INFO UNTUK AUDITOR -->
@@ -65,7 +65,7 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
           <th>Deskripsi</th>
           <th>Tanggal Pajak</th>
           <th>Penanggung Jawab</th>
-          <th width="80">Aksi</th>
+          <th width="120">Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -116,26 +116,23 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
             </td>
             <td><?= htmlspecialchars($row['penanggung_jawab'] ?? '-') ?></td>
             <td>
-              <div class="dropdown">
-                <button class="dropdown-toggle" type="button">
-                  <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="dropdown-menu">
-                  <!-- TOMBOL DETAIL - SEMUA ROLE BISA AKSES -->
-                  <a href="detail.php?id=<?= $row['id'] ?>" class="dropdown-item">
-                    <i class="fas fa-eye"></i> Lihat Detail
+              <div class="action-buttons">
+                <!-- TOMBOL DETAIL - SEMUA ROLE BISA AKSES -->
+                <a href="detail.php?id=<?= $row['id'] ?>" class="btn-action btn-view" title="Lihat Detail">
+                  <i class="fas fa-eye"></i>
+                </a>
+                
+                <?php if (!$is_auditor): ?>
+                  <!-- TOMBOL EDIT & HAPUS HANYA UNTUK ADMIN & OPERATOR -->
+                  <a href="update.php?id=<?= $row['id'] ?>" class="btn-action btn-edit" title="Edit Data">
+                    <i class="fas fa-edit"></i>
                   </a>
-                  
-                  <?php if (!$is_auditor): ?>
-                    <!-- TOMBOL EDIT & HAPUS HANYA UNTUK ADMIN & OPERATOR -->
-                    <a href="update.php?id=<?= $row['id'] ?>" class="dropdown-item">
-                      <i class="fas fa-edit"></i> Edit Data
-                    </a>
-                    <a href="delete.php?id=<?= $row['id'] ?>" class="dropdown-item dropdown-item-danger" onclick="return confirm('Yakin ingin menghapus data kendaraan ini?')">
-                      <i class="fas fa-trash"></i> Hapus
-                    </a>
-                  <?php endif; ?>
-                </div>
+                  <a href="delete.php?id=<?= $row['id'] ?>" class="btn-action btn-delete" 
+                     title="Hapus Data" 
+                     onclick="return confirm('Yakin ingin menghapus data kendaraan ini?')">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                <?php endif; ?>
               </div>
             </td>
           </tr>
@@ -187,6 +184,68 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
 
 .btn-primary:hover {
   background: #1c4835;
+}
+
+/* Tombol dengan icon saja */
+.btn-icon {
+  padding: 0.5rem 0.6rem;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+}
+
+.btn-view {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-color: #bbdefb;
+}
+
+.btn-view:hover {
+  background: #bbdefb;
+  color: #0d47a1;
+}
+
+.btn-edit {
+  background: #fff3e0;
+  color: #f57c00;
+  border-color: #ffe0b2;
+}
+
+.btn-edit:hover {
+  background: #ffe0b2;
+  color: #e65100;
+}
+
+.btn-delete {
+  background: #ffebee;
+  color: #d32f2f;
+  border-color: #ffcdd2;
+}
+
+.btn-delete:hover {
+  background: #ffcdd2;
+  color: #b71c1c;
 }
 
 /* Badge Styles */
@@ -242,80 +301,6 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
   background: #f8f9fa;
 }
 
-/* Dropdown Styles */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-toggle {
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.3s ease;
-}
-
-.dropdown-toggle:hover {
-  background: #f8f9fa;
-  border-color: #999;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  min-width: 160px;
-  z-index: 1000;
-  display: none;
-  margin-top: 0.25rem;
-}
-
-.dropdown:hover .dropdown-menu {
-  display: block;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  color: #333;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background 0.2s;
-  font-size: 0.85rem;
-}
-
-.dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.dropdown-item:hover {
-  background: #f8f9fa;
-  color: #2b6b4f;
-}
-
-.dropdown-item i {
-  width: 16px;
-  text-align: center;
-}
-
-.dropdown-item-danger {
-  color: #dc3545;
-}
-
-.dropdown-item-danger:hover {
-  background: #f8d7da;
-  color: #721c24;
-}
-
 /* Alert Styles */
 .alert-error {
   background: #f8d7da;
@@ -337,49 +322,21 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
     padding: 0.5rem;
   }
   
-  .dropdown-menu {
-    position: fixed;
-    top: auto;
-    right: 1rem;
-    left: 1rem;
-    min-width: auto;
+  .action-buttons {
+    gap: 0.2rem;
   }
   
-  .dropdown-item {
-    padding: 1rem;
-    font-size: 0.9rem;
+  .btn-action {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+  
+  .btn-icon {
+    width: 36px;
+    height: 36px;
   }
 }
 </style>
-
-<script>
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-  const dropdowns = document.querySelectorAll('.dropdown');
-  dropdowns.forEach(function(dropdown) {
-    if (!dropdown.contains(event.target)) {
-      const menu = dropdown.querySelector('.dropdown-menu');
-      if (menu) menu.style.display = 'none';
-    }
-  });
-});
-
-// Toggle dropdown on click (for mobile)
-document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-  toggle.addEventListener('click', function(e) {
-    e.stopPropagation();
-    const menu = this.parentNode.querySelector('.dropdown-menu');
-    const isVisible = menu.style.display === 'block';
-    
-    // Close all other dropdowns
-    document.querySelectorAll('.dropdown-menu').forEach(function(otherMenu) {
-      otherMenu.style.display = 'none';
-    });
-    
-    // Toggle current dropdown
-    menu.style.display = isVisible ? 'none' : 'block';
-  });
-});
-</script>
 
 <?php include '../../includes/footer.php'; ?>
