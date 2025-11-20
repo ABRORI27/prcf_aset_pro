@@ -16,7 +16,12 @@ $data = mysqli_fetch_assoc($q);
 ?>
 
 <div class="page">
-  <h2>Detail Kendaraan</h2>
+  <div class="header">
+    <h2>Detail Kendaraan</h2>
+    <a href="read.php" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Kembali
+    </a>
+  </div>
   <div class="card">
     <table class="table">
       <tr><th>Nama Aset</th><td><?= $data['nama_barang'] ?></td></tr>
@@ -27,7 +32,6 @@ $data = mysqli_fetch_assoc($q);
       <tr><th>Harga Pembelian</th><td>Rp <?= number_format($data['harga_pembelian'], 0, ',', '.') ?></td></tr>
     </table>
   </div>
-  <a href="read.php" class="btn">← Kembali</a>
 </div>
 
 <?php include '../../includes/footer.php'; ?>
