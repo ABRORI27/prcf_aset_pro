@@ -31,21 +31,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $waktu_perolehan   = $_POST['waktu_perolehan'];
     $lokasi_barang     = $_POST['lokasi_barang'];
     $kondisi_barang    = $_POST['kondisi_barang'];
-    $kode_barang    = $_POST['kode_barang'];
+    $kode_barang       = $_POST['kode_barang'];
     $program_pendanaan = !empty($_POST['program_pendanaan']) ? $_POST['program_pendanaan'] : null;
     $kategori_barang   = $_POST['kategori_barang'];
-    $nomor_plat        = $_POST['nomor_plat'] ?? null;
-    $tanggal_pajak     = $_POST['tanggal_pajak'] ?? null;
-    $penanggung_jawab  = $_POST['penanggung_jawab'] ?? null;
+    
+    // ✅ PERBAIKAN: Ambil field kendaraan dengan kondisi yang benar
+    $nomor_plat        = ($_POST['nomor_plat'] && $kategori_barang == 4) ? $_POST['nomor_plat'] : null;
+    $tanggal_pajak     = ($_POST['tanggal_pajak'] && $kategori_barang == 4) ? $_POST['tanggal_pajak'] : null;
+    $penanggung_jawab  = ($_POST['penanggung_jawab'] && $kategori_barang == 4) ? $_POST['penanggung_jawab'] : null;
+    
+    // Ambil periode dari form
+    $periode_tahun     = $_POST['periode_tahun'] ?? null;
+    $periode_bulan     = $_POST['periode_bulan'] ?? null;
 
-    // ✅ PERBAIKAN: Hanya kategori Kendaraan (id=4) yang simpan field kendaraan
-    if ($kategori_barang != 4) { // Hanya id 4 (Kendaraan)
-        $nomor_plat = null;
-        $tanggal_pajak = null;
-        $penanggung_jawab = null;
-    }
-
+    // Handle empty values
     if ($nomor_seri === '') $nomor_seri = null;
+    if ($periode_tahun === '') $periode_tahun = null;
+    if ($periode_bulan === '') $periode_bulan = null;
 
     // Update database
     $stmtUpdate = $conn->prepare("
@@ -53,16 +55,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             nama_barang = ?, deskripsi = ?, jumlah_unit = ?, nomor_seri = ?,
             nomor_urut_barang = ?, harga_pembelian = ?, waktu_perolehan = ?, lokasi_barang = ?,
             kondisi_barang = ?, kode_barang = ?, program_pendanaan = ?,
-            kategori_barang = ?, nomor_plat = ?, tanggal_pajak = ?, penanggung_jawab = ?
+            kategori_barang = ?, nomor_plat = ?, tanggal_pajak = ?, penanggung_jawab = ?,
+            periode_tahun = ?, periode_bulan = ?
         WHERE id = ?
     ");
 
     $stmtUpdate->bind_param(
-        "ssississssissssi",
+        "ssississssissssiii",
         $nama_barang, $deskripsi, $jumlah_unit, $nomor_seri,
         $nomor_urut_barang, $harga_pembelian, $waktu_perolehan, $lokasi_barang,
         $kondisi_barang, $kode_barang, $program_pendanaan,
-        $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab, $id
+        $kategori_barang, $nomor_plat, $tanggal_pajak, $penanggung_jawab,
+        $periode_tahun, $periode_bulan,
+        $id
     );
 
     if ($stmtUpdate->execute()) {
@@ -72,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<div class='alert red'>❌ Gagal memperbarui data: " . $stmtUpdate->error . "</div>";
     }
 }
+
+// Ambil data dropdown untuk lokasi
+$lokasiList = $conn->query("SELECT id, nama_lokasi FROM lokasi_barang ORDER BY nama_lokasi ASC");
 ?>
 
 <div class="page">
@@ -88,18 +96,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="number" name="jumlah_unit" value="<?= $aset['jumlah_unit'] ?>">
 
         <label>Nomor Seri</label>
-        <input type="text" name="nomor_seri" value="<?= $aset['nomor_seri'] ?>">
+        <input type="text" name="nomor_seri" value="<?= htmlspecialchars($aset['nomor_seri'] ?? '') ?>">
 
         <label>No Urut Barang</label>
         <input type="text" name="nomor_urut_barang" value="<?= $aset['nomor_urut_barang'] ?>">
 
         <label>Harga Pembelian</label>
-        <input type="number" name="harga_pembelian" value="<?= $aset['harga_pembelian'] ?>">
+        <input type="number" name="harga_pembelian" step="0.01" value="<?= $aset['harga_pembelian'] ?>">
 
         <label>Waktu Perolehan</label>
         <input type="date" name="waktu_perolehan" value="<?= $aset['waktu_perolehan'] ?>">
 
-        <!-- // Di bagian form, tambahkan setelah field waktu_perolehan: -->
+        <!-- Field Periode -->
         <label>Periode Tahun</label>
         <input type="number" name="periode_tahun" value="<?= $aset['periode_tahun'] ?>" min="2000" max="2030">
 
@@ -111,23 +119,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
                 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
                 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-    ];
-            foreach ($bulan_list as $num => $nama) {
-                $selected = $aset['periode_bulan'] == $num ? 'selected' : '';
-                echo "<option value='$num' $selected>$nama</option>";
-    }
-    ?>
-</select>
+                ];
+                foreach ($bulan_list as $num => $nama) {
+                    $selected = $aset['periode_bulan'] == $num ? 'selected' : '';
+                    echo "<option value='$num' $selected>$nama</option>";
+                }
+            ?>
+        </select>
 
+        <!-- Lokasi Barang -->
         <label>Lokasi Barang</label>
-        <input type="text" name="lokasi_barang" value="<?= $aset['lokasi_barang'] ?>">
+        <select name="lokasi_barang" required>
+            <option value="">-- Pilih Lokasi --</option>
+            <?php 
+            while ($lokasi = $lokasiList->fetch_assoc()) {
+                $selected = ($aset['lokasi_barang'] == $lokasi['id']) ? 'selected' : '';
+                echo "<option value='{$lokasi['id']}' $selected>{$lokasi['nama_lokasi']}</option>";
+            }
+            ?>
+        </select>
 
         <label>Kondisi Barang</label>
         <select name="kondisi_barang" required>
             <option value="Baik" <?= $aset['kondisi_barang']=='Baik'?'selected':'' ?>>Baik</option>
             <option value="Rusak" <?= $aset['kondisi_barang']=='Rusak'?'selected':'' ?>>Rusak</option>
-            <option value="Rusak-perlu diservis, butuh dana besar">rusak, perlu diservis, butuh dana besar</option>
-            <option value="Rusak-kaki kursi patah">Rusak-kaki kursi patah</option>
+            <option value="Rusak-perlu diservis, butuh dana besar" <?= $aset['kondisi_barang']=='Rusak-perlu diservis, butuh dana besar'?'selected':'' ?>>rusak, perlu diservis, butuh dana besar</option>
+            <option value="Rusak-kaki kursi patah" <?= $aset['kondisi_barang']=='Rusak-kaki kursi patah'?'selected':'' ?>>Rusak-kaki kursi patah</option>
             <option value="Hilang" <?= $aset['kondisi_barang']=='Hilang'?'selected':'' ?>>Hilang</option>
             <option value="Rusak-Habis Masa Pakai" <?= $aset['kondisi_barang']=='Rusak-Habis Masa Pakai'?'selected':'' ?>>Rusak-Habis Masa Pakai</option>
             <option value="Rusak-Sedang Diservis" <?= $aset['kondisi_barang']=='Rusak-Sedang Diservis'?'selected':'' ?>>Rusak-Sedang Diservis</option>
@@ -160,16 +177,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Peralatan Lapangan</option>
         </select>
 
-        <!-- Field tambahan Kendaraan / Field Equipment -->
-        <div id="kendaraanFields" style="<?= in_array($aset['kategori_barang'], [4,5]) ? 'display:block;' : 'display:none;' ?>">
+        <!-- ✅ PERBAIKAN: Field tambahan Kendaraan - Hanya untuk kategori 4 -->
+        <div id="kendaraanFields" style="<?= $aset['kategori_barang'] == 4 ? 'display:block;' : 'display:none;' ?>">
             <label>Nomor Plat</label>
-            <input type="text" name="nomor_plat" value="<?= $aset['nomor_plat'] ?>">
+            <input type="text" name="nomor_plat" value="<?= htmlspecialchars($aset['nomor_plat'] ?? '') ?>">
 
             <label>Tanggal Pajak</label>
             <input type="date" name="tanggal_pajak" value="<?= $aset['tanggal_pajak'] ?>">
 
             <label>Penanggung Jawab</label>
-            <input type="text" name="penanggung_jawab" value="<?= $aset['penanggung_jawab'] ?>">
+            <input type="text" name="penanggung_jawab" value="<?= htmlspecialchars($aset['penanggung_jawab'] ?? '') ?>">
         </div>
 
         <button type="submit" class="btn">💾 Simpan Perubahan</button>
@@ -179,7 +196,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 function toggleKendaraanFields() {
     const kategori = document.getElementById('kategori_barang').value;
-    document.getElementById('kendaraanFields').style.display = (kategori == 4 || kategori == 5) ? 'block' : 'none';
+    // ✅ PERBAIKAN: Hanya kategori 4 (Kendaraan) yang tampilkan field kendaraan
+    document.getElementById('kendaraanFields').style.display = (kategori == 4) ? 'block' : 'none';
+    
+    // ✅ PERBAIKAN: Jika bukan kendaraan, clear nilai field kendaraan
+    if (kategori != 4) {
+        document.querySelector('input[name="nomor_plat"]').value = '';
+        document.querySelector('input[name="tanggal_pajak"]').value = '';
+        document.querySelector('input[name="penanggung_jawab"]').value = '';
+    }
 }
 </script>
 
