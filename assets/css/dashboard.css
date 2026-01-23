@@ -365,8 +365,8 @@ body.light-mode .table tr:hover {
    =============================== */
 /* Login/Register Box */
 .login-box {
-  background: var(--panel-dark);
-  color: var(--text-light);
+  background: var(--panel-light);
+  color: var(--text-dark);
   max-width: 400px;
   margin: 80px auto;
   padding: 30px;
@@ -391,7 +391,7 @@ body.light-mode .login-box {
   padding: 10px;
   margin-top: 6px;
   border-radius: 6px;
-  border: 1px solid #23303a;
+  border: 1px solid #35668c;
   background: #0b1220;
   color: var(--text-light);
 }
