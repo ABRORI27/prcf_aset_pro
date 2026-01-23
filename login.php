@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </style>
 </head>
-<body>
+<body class="login-page">
   <div class="login-box">
     <h2>Login</h2>
 

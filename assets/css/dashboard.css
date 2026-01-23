@@ -43,7 +43,7 @@
 
 /* --- BASE STYLE --- */
 body {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-light);
   color: var(--text-dark);
   font-family: "Inter", sans-serif;
   transition: background-color 0.3s, color 0.3s;
@@ -391,7 +391,7 @@ body.light-mode .login-box {
   padding: 10px;
   margin-top: 6px;
   border-radius: 6px;
-  border: 1px solid #35668c;
+  border: 1px solid #23303a;
   background: #0b1220;
   color: var(--text-light);
 }
