@@ -5,48 +5,79 @@ include 'includes/koneksi.php';
 $err = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $username = trim($_POST['username']);
     $pwd = trim($_POST['password']);
 
-    $stmt = $conn->prepare('SELECT id, username, nama_lengkap, password_hash, role FROM users WHERE username = ? LIMIT 1');
-    $stmt->bind_param('s', $username);
-    $stmt->execute();
-    $res = $stmt->get_result();
+    // =========================
+    // VALIDASI INPUT
+    // =========================
 
-    if ($row = $res->fetch_assoc()) {
-        if (password_verify($pwd, $row['password_hash'])) {
+    if (strlen($username) < 6) {
+        $err = '⚠️ Username minimal 6 karakter.';
+    } 
+    elseif (strlen($pwd) < 8) {
+        $err = '⚠️ Password minimal 8 karakter.';
+    }
+    elseif (
+        !preg_match('/[A-Z]/', $pwd) ||     // huruf besar
+        !preg_match('/[a-z]/', $pwd) ||     // huruf kecil
+        !preg_match('/[0-9]/', $pwd) ||     // angka
+        !preg_match('/[\W]/', $pwd)         // simbol / notasi
+    ) {
+        $err = '⚠️ Password harus mengandung huruf besar, huruf kecil, angka, dan simbol.';
+    } 
+    else {
 
-            // Simpan semua data user ke session
-          $_SESSION['user'] = [
-            'id' => $row['id'],
-            'username' => $row['username'],
-            'nama_lengkap' => $row['nama_lengkap'],
-            'role' => $row['role']
-];
+        // =========================
+        // QUERY DATABASE
+        // =========================
+        $stmt = $conn->prepare(
+            'SELECT id, username, nama_lengkap, password_hash, role 
+             FROM users 
+             WHERE username = ? 
+             LIMIT 1'
+        );
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $res = $stmt->get_result();
 
+        if ($row = $res->fetch_assoc()) {
 
-            // Redirect otomatis berdasarkan role
-            switch ($row['role']) {
-                case 'Admin':
-                    header('Location: index.php');
-                    break;
-                case 'Operator':
-                    header('Location: modules/aset/output_aset.php');
-                    break;
-                case 'Auditor':
-                    header('Location: modules/aset/export_excel.php');
-                    break;
-                default:
-                    header('Location: index.php');
-                    break;
+            if (password_verify($pwd, $row['password_hash'])) {
+
+                // Simpan data user ke session
+                $_SESSION['user'] = [
+                    'id' => $row['id'],
+                    'username' => $row['username'],
+                    'nama_lengkap' => $row['nama_lengkap'],
+                    'role' => $row['role']
+                ];
+
+                // Redirect berdasarkan role
+                switch ($row['role']) {
+                    case 'Admin':
+                        header('Location: index.php');
+                        break;
+                    case 'Operator':
+                        header('Location: modules/aset/output_aset.php');
+                        break;
+                    case 'Auditor':
+                        header('Location: modules/aset/export_excel.php');
+                        break;
+                    default:
+                        header('Location: index.php');
+                        break;
+                }
+                exit;
+
+            } else {
+                $err = '⚠️ Password salah.';
             }
-            exit;
 
         } else {
-            $err = '⚠️ Password salah.';
+            $err = '⚠️ Username tidak ditemukan.';
         }
-    } else {
-        $err = '⚠️ Username tidak ditemukan.';
     }
 }
 ?>
@@ -79,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </style>
 </head>
-<body class="login-page">
+<body>
   <div class="login-box">
     <h2>Login</h2>
 
