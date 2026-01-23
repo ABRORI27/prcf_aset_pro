@@ -169,12 +169,9 @@ $lokasiList = $conn->query("SELECT id, nama_lokasi FROM lokasi_barang ORDER BY n
         <label>Kategori Barang</label>
         <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
             <option value="1" <?= $aset['kategori_barang']==1?'selected':'' ?>>Office Furniture</option>
-            <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Furniture Kantor</option>
-            <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Field Equipment</option>
-            <option value="4" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
-            <option value="5" <?= $aset['kategori_barang']==5?'selected':'' ?>>Fire Equipment</option>
-            <option value="6" <?= $aset['kategori_barang']==6?'selected':'' ?>>Office Equipment</option>
-            <option value="7" <?= $aset['kategori_barang']==7?'selected':'' ?>>Peralatan Lapangan</option>
+            <option value="2" <?= $aset['kategori_barang']==3?'selected':'' ?>>Field Equipment</option>
+            <option value="3" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
+            <option value="4" <?= $aset['kategori_barang']==6?'selected':'' ?>>Office Equipment</option>
         </select>
 
         <!-- ✅ PERBAIKAN: Field tambahan Kendaraan - Hanya untuk kategori 4 -->

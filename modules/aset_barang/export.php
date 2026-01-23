@@ -130,7 +130,7 @@ class MYPDF extends TCPDF {
     // Page header
     public function Header() {
         // Logo PRCF
-        $image_file = '../../assets/img/prcf_logo.png';
+        $image_file = '../../assets/img/logo.png';
         if (file_exists($image_file)) {
             $this->Image($image_file, 10, 10, 25, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         }
