@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
   <div class="login-box">
-    <h2>Buat Akun Baru</h2>
+    <h2>Create New Account</h2>
     <?php if ($err): ?>
       <div class="alert"><?= htmlspecialchars($err) ?></div>
     <?php endif; ?>
@@ -62,11 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </label>
 
       
-      <label>Nama Lengkap
+      <label>Full Name
         <input type="text" name="nama_lengkap">
       </label>
       
-      <label>Email
+      <label>Email Address
         <input type="email" name="email">
       </label>
       <label>Role
@@ -77,11 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </select>
       </label>
       
-      <button class="btn" type="submit">Daftar</button>
+      <button class="btn" type="submit">Register</button>
     </form>
 
     <div class="link">
-      <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
+      <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
   </div>
 </body>

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (strlen($username) < 6) {
         $err = '⚠️ Username minimal 6 karakter.';
-    } 
+    }
     elseif (strlen($pwd) < 8) {
         $err = '⚠️ Password minimal 8 karakter.';
     }
@@ -33,10 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // QUERY DATABASE
         // =========================
         $stmt = $conn->prepare(
-            'SELECT id, username, nama_lengkap, password_hash, role 
-             FROM users 
-             WHERE username = ? 
-             LIMIT 1'
+            'SELECT id, username, nama_lengkap, password_hash, role
+            FROM users
+            WHERE username = ?
+            LIMIT 1'
         );
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: modules/aset/output_aset.php');
                         break;
                     case 'Auditor':
-                        header('Location: modules/aset/export_excel.php');
+                        header('Location: modules/aset/export.php');
                         break;
                     default:
                         header('Location: index.php');
@@ -130,8 +130,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button class="btn" type="submit">Login</button>
     </form>
     <div class="login-links">
-      <p>Belum punya akun? <a href="register.php">Daftar di sini</a></p>
-      <p><a href="forgot_password.php">Lupa password?</a></p>
+      <p>Not account yet? <a href="register.php">Sign up</a></p>
+      <p><a href="forgot_password.php">Forgot password?</a></p>
     </div>
   </div>
 </body>

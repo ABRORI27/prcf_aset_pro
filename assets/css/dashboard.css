@@ -446,6 +446,17 @@ body.light-mode .login-box input {
   transform: scale(1.2);
   opacity: 0.8;
 }
+.auth-links {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+.auth-links li {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
 
 /* ===============================
     END OF DASHBOARD.CSS
