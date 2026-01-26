@@ -385,7 +385,7 @@ $bulan_filter = $_GET['bulan'] ?? '';
       <!-- Search -->
       <div class="search-container">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="searchInput" placeholder="Cari aset..." title="Cari berdasarkan nama, kategori, lokasi...">
+        <input type="text" id="searchInput" placeholder="Cari aset..." title="Cari berdasarkan nama, kode barang, nomor seri, kategori, lokasi...">
       </div>
 
       <!-- Tombol Aksi -->
@@ -436,6 +436,8 @@ $bulan_filter = $_GET['bulan'] ?? '';
         <tr>
           <th width="50">No</th>
           <th>Nama Barang<br><select id="filterNama" class="filter-select" onchange="filterColumn(1)"><option value="">🔍 Semua</option></select></th>
+          <th style="display:none;">Kode Barang</th>
+          <th style="display:none;">Nomor Seri</th>
           <th>Kategori<br><select id="filterKategori" class="filter-select" onchange="filterColumn(2)"><option value="">📂 Semua</option></select></th>
           <th>Kondisi<br><select id="filterKondisi" class="filter-select" onchange="filterColumn(3)"><option value="">🔄 Semua</option></select></th>
           <th>Lokasi<br><select id="filterLokasi" class="filter-select" onchange="filterColumn(4)"><option value="">🏢 Semua</option></select></th>
@@ -505,6 +507,9 @@ $bulan_filter = $_GET['bulan'] ?? '';
             echo "<tr>
               <td>{$no}</td>
               <td><strong>{$row['nama_barang']}</strong></td>
+                <!-- Kolom hidden untuk pencarian -->
+                <td style='display:none;'>{$row['kode_barang']}</td>
+                <td style='display:none;'>{$row['nomor_seri']}</td>
               <td>" . ($row['nama_kategori'] ?? '-') . "</td>
               <td>
                 <span style='padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; " . 
