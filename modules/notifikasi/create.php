@@ -1,6 +1,7 @@
 <?php
 include '../../includes/header.php';
 include '../../config/db.php';
+include 'send_email.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $aset_id = $_POST['aset_id'];
@@ -11,50 +12,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($aset_id == '' || $tipe_notifikasi == '' || $tanggal_notifikasi == '') {
     echo "<div class='alert red'>❌ Semua field wajib diisi!</div>";
   } else {
+
     $sql = "INSERT INTO notifikasi (aset_id, tipe_notifikasi, tanggal_notifikasi, status)
             VALUES ('$aset_id', '$tipe_notifikasi', '$tanggal_notifikasi', '$status')";
+
     if (mysqli_query($conn, $sql)) {
+
+      // ==========================
+      // 🔔 LOGIKA EMAIL H-30
+      // ==========================
+
+      $getAset = mysqli_query($conn, "
+          SELECT a.nama_barang, a.tanggal_pajak, a.waktu_perolehan,
+                 a.periode_bulan, u.email
+          FROM aset_barang a
+          LEFT JOIN users u ON a.user_input = u.id
+          WHERE a.id = '$aset_id'
+      ");
+
+      $asetData = mysqli_fetch_assoc($getAset);
+
+      $nama_barang = $asetData['nama_barang'];
+      $email = $asetData['email'];
+
+      // Tentukan tanggal tenggat
+      if ($tipe_notifikasi == "Pajak Kendaraan") {
+          $tanggal_tenggat = $asetData['tanggal_pajak'];
+
+      } elseif ($tipe_notifikasi == "Perawatan" && $asetData['periode_bulan'] != null) {
+
+          $tanggal_tenggat = date('Y-m-d', strtotime(
+              $asetData['waktu_perolehan'] . ' +' . $asetData['periode_bulan'] . ' months'
+          ));
+
+      } else {
+          $tanggal_tenggat = $tanggal_notifikasi;
+      }
+
+      // Hitung H-30
+      $tanggal_reminder = date('Y-m-d', strtotime($tanggal_tenggat . ' -30 days'));
+      $tanggal_sekarang = date('Y-m-d');
+
+      if ($tanggal_sekarang >= $tanggal_reminder && !empty($email)) {
+          kirimEmailNotifikasi($email, $nama_barang, $tipe_notifikasi, $tanggal_tenggat);
+      }
+
+      // ==========================
+
       echo "<script>alert('✅ Notifikasi berhasil ditambahkan!');window.location='read.php';</script>";
+
     } else {
       echo "<div class='alert red'>❌ Gagal menambah notifikasi: " . mysqli_error($conn) . "</div>";
     }
   }
 }
 ?>
-
-<div class="page">
-  <h2>Tambah Notifikasi</h2>
-  <form method="post" class="form-section">
-    <label>Pilih Aset</label>
-    <select name="aset_id" required>
-      <option value="">-- Pilih Aset --</option>
-      <?php
-      $aset = mysqli_query($conn, "SELECT id, nama_barang FROM aset_barang ORDER BY nama_barang ASC");
-      while ($row = mysqli_fetch_assoc($aset)) {
-        echo "<option value='{$row['id']}'>[{$row['id']}] {$row['nama_barang']}</option>";
-      }
-      ?>
-    </select>
-
-    <label>Tipe Notifikasi</label>
-    <select name="tipe_notifikasi" required>
-      <option value="">-- Pilih Tipe --</option>
-      <option value="Pajak Kendaraan">Pajak Kendaraan</option>
-      <option value="Perawatan">Perawatan</option>
-      <option value="Audit">Audit</option>
-    </select>
-
-    <label>Tanggal Notifikasi</label>
-    <input type="date" name="tanggal_notifikasi" required>
-
-    <label>Status</label>
-    <select name="status">
-      <option value="Belum Terkirim">Belum Terkirim</option>
-      <option value="Terkirim">Terkirim</option>
-    </select>
-
-    <button type="submit" class="btn">Simpan</button>
-  </form>
-</div>
-
-<?php include '../../includes/footer.php'; ?>
