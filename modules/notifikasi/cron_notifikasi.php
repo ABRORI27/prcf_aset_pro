@@ -35,6 +35,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     $tanggal_reminder = date('Y-m-d', strtotime($tanggal_tenggat . ' -30 days'));
 
     if ($tanggal_hari_ini >= $tanggal_reminder && !empty($row['email'])) {
+        // DEBUG sementara
+    echo "Email tujuan: " . $row['email'] . "<br>";
 
         if (kirimEmailNotifikasi(
             $row['email'],
