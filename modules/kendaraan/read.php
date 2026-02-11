@@ -128,8 +128,8 @@ $total_rows = ($result instanceof mysqli_result) ? mysqli_num_rows($result) : 0;
                     <i class="fas fa-edit"></i>
                   </a>
                   <a href="delete.php?id=<?= $row['id'] ?>" class="btn-action btn-delete" 
-                     title="Hapus Data" 
-                     onclick="return confirm('Yakin ingin menghapus data kendaraan ini?')">
+                    title="Hapus Data" 
+                    onclick="return confirm('Yakin ingin menghapus data kendaraan ini?')">
                     <i class="fas fa-trash"></i>
                   </a>
                 <?php endif; ?>

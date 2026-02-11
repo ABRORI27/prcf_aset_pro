@@ -8,7 +8,30 @@ include '../../config/db.php';
     <h2>📦 Data Lokasi Barang</h2>
     <a href="create.php" class="btn">+ Tambah Lokasi</a>
   </div>
+<style>
+      .icon-btn {
+      text-decoration: none;
+      font-size: 16px;
+      margin-right: 8px;
+      padding: 6px;
+      border-radius: 4px;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+    }
 
+    .icon-btn:hover {
+      background-color: #e9ecef;
+      transform: scale(1.1);
+    }
+
+    .edit-btn { color: #28a745; }
+    .delete-btn { color: #dc3545; }
+    /* .detail-btn { color: #17a2b8; } */
+</style>
   <div class="card">
     <table class="table">
       <thead>
@@ -58,8 +81,12 @@ include '../../config/db.php';
             // }
             echo "</td>
                     <td>
-                      <a href='update.php?id={$row['id']}' class='icon-btn' title='Edit'>✏️</a>
-                      <a href='delete.php?id={$row['id']}' class='icon-btn' title='Hapus' onclick='return confirm(\"Yakin hapus lokasi ini?\")'>🗑️</a>
+                      <a href='update.php?id={$row['id']}' class='icon-btn edit-btn' title='Edit Data'>
+                  <i class='fas fa-edit'></i>
+                </a>
+                <a href='delete.php?id={$row['id']}' class='icon-btn delete-btn' title='Hapus Data' onclick='return confirm(\"Hapus data ini?\")'>
+                  <i class='fas fa-trash'></i>
+                </a>
                     </td>
                   </tr>";
             $no++;

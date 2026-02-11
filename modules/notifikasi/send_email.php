@@ -12,23 +12,22 @@ function kirimEmailNotifikasi($email, $nama_barang, $tipe, $tanggal_tenggat)
     $mail = new PHPMailer(true);
 
     try {
-        // Konfigurasi SMTP Gmail
+
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = '15anasanjiabrori@gmail.com'; // GANTI
-        $mail->Password   = 'rsgr qjsx ampc xork';  // GANTI (App Password)
-        $mail->SMTPSecure = 'tls';
+        $mail->Username   = '15anasanjiabrori@gmail.com';
+        $mail->Password   = 'rsgr qjsx ampc xork'; // Ganti dengan App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
-        // Pengirim
         $mail->setFrom('15anasanjiabrori@gmail.com', 'Sistem Notifikasi Aset PRCF');
         $mail->addAddress($email);
 
-        // Konten
         $mail->isHTML(true);
         $mail->Subject = "Pengingat $tipe - $nama_barang";
-        $mail->Body    = "
+
+        $mail->Body = "
             <h3>Pengingat Notifikasi Aset</h3>
             <p>Halo,</p>
             <p>Aset <b>$nama_barang</b> memiliki jadwal <b>$tipe</b>.</p>
@@ -42,6 +41,7 @@ function kirimEmailNotifikasi($email, $nama_barang, $tipe, $tanggal_tenggat)
         return true;
 
     } catch (Exception $e) {
+        error_log("Email gagal: " . $mail->ErrorInfo);
         return false;
     }
 }
