@@ -1,8 +1,14 @@
 <?php 
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// ✅ Load dulu file yang berisi function
 require_once __DIR__ . '/../config/init.php';
 require_once __DIR__ . '/auth_check.php';
 
-// Cegah halaman diakses tanpa login
+// ✅ Baru panggil function
 require_login();
 
 // Ambil data kategori untuk dropdown

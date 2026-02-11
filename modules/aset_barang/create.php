@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $status_penggunaan = 'Aktif';
   $tanggal_pajak     = $_POST['tanggal_pajak'] ?? null;
   $penanggung_jawab  = $_POST['penanggung_jawab'] ?? null;
-  $user_input        = $_SESSION['user_id'] ?? null;
+  $user_input        = $_SESSION['user']['id'] ?? null;
 
   // Ambil nama kategori
   $kategoriCheck = $conn->query("SELECT nama_kategori FROM kategori_barang WHERE id = $kategori_barang")->fetch_assoc();
@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     user_input, foto_barang, status_penggunaan, tanggal_pajak, penanggung_jawab
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param(
-    "ssissdssssissiiiss",
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(
+    "ssisisdsssisiissss",
     $nama_barang,
     $deskripsi,
     $jumlah_unit,
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_penggunaan,
     $tanggal_pajak,
     $penanggung_jawab
-  );
+);
 
   if ($stmt->execute()) {
     $aset_id = $conn->insert_id;

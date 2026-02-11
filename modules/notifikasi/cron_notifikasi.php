@@ -1,41 +1,55 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include '../../config/db.php';
 include 'send_email.php';
 
-$today = date('Y-m-d');
+$tanggal_hari_ini = date('Y-m-d');
 
-$query = mysqli_query($conn, "
-    SELECT n.*, a.nama_barang, a.tanggal_pajak, a.waktu_perolehan,
-           a.periode_bulan, u.email
-    FROM notifikasi n
-    JOIN aset_barang a ON n.aset_id = a.id
-    LEFT JOIN users u ON a.user_input = u.id
-    WHERE n.status = 'Belum Terkirim'
-");
+$sql = "
+SELECT n.id, n.tipe_notifikasi, n.tanggal_notifikasi,
+    a.nama_barang, a.tanggal_pajak, a.waktu_perolehan,
+    a.periode_bulan, u.email
+FROM notifikasi n
+LEFT JOIN aset_barang a ON n.aset_id = a.id
+LEFT JOIN users u ON a.user_input = u.id
+WHERE n.status = 'Belum Terkirim'
+";
 
-while ($row = mysqli_fetch_assoc($query)) {
+$result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_assoc($result)) {
+
+    $tanggal_tenggat = $row['tanggal_notifikasi'];
 
     if ($row['tipe_notifikasi'] == "Pajak Kendaraan") {
-        $tenggat = $row['tanggal_pajak'];
-    } elseif ($row['tipe_notifikasi'] == "Perawatan" && $row['periode_bulan'] != null) {
-        $tenggat = date('Y-m-d', strtotime(
+        $tanggal_tenggat = $row['tanggal_pajak'];
+
+    } elseif ($row['tipe_notifikasi'] == "Perawatan" && !empty($row['periode_bulan'])) {
+        $tanggal_tenggat = date('Y-m-d', strtotime(
             $row['waktu_perolehan'] . ' +' . $row['periode_bulan'] . ' months'
         ));
-    } else {
-        $tenggat = $row['tanggal_notifikasi'];
     }
 
-    $reminder = date('Y-m-d', strtotime($tenggat . ' -30 days'));
+    $tanggal_reminder = date('Y-m-d', strtotime($tanggal_tenggat . ' -30 days'));
 
-    if ($today >= $reminder && !empty($row['email'])) {
+    if ($tanggal_hari_ini >= $tanggal_reminder && !empty($row['email'])) {
 
-        if (kirimEmailNotifikasi($row['email'], $row['nama_barang'], $row['tipe_notifikasi'], $tenggat)) {
+        if (kirimEmailNotifikasi(
+            $row['email'],
+            $row['nama_barang'],
+            $row['tipe_notifikasi'],
+            $tanggal_tenggat
+        )) {
 
             mysqli_query($conn, "
                 UPDATE notifikasi
-                SET status = 'Terkirim'
-                WHERE id = '{$row['id']}'
+                SET status='Terkirim'
+                WHERE id='{$row['id']}'
             ");
+
+            echo "Email terkirim untuk: " . $row['nama_barang'] . "<br>";
         }
     }
 }
