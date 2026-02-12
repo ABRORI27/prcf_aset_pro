@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'includes/koneksi.php';
+include 'Dataset/functions/log_activity.php';
 
 $err = '';
 
@@ -54,15 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'role' => $row['role']
                 ];
 
+                // ✅ TAMBAHAN INI SAJA (jangan ubah yang lain)
+                if (function_exists('logActivity')) {
+                    logActivity($conn, $row['id'], "Login ke sistem");
+                }
+
                 // Redirect berdasarkan role
                 switch ($row['role']) {
-                    case 'Admin':
+                    case 'admin':
                         header('Location: index.php');
                         break;
-                    case 'Operator':
-                        header('Location: modules/aset/output_aset.php');
+                    case 'operator':
+                        header('Location: modules/aset/read.php');
                         break;
-                    case 'Auditor':
+                    case 'auditor':
                         header('Location: modules/aset/export.php');
                         break;
                     default:
