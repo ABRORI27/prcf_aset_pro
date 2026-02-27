@@ -16,18 +16,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (strlen($username) < 6) {
         $err = '⚠️ Username minimal 6 karakter.';
+        log_activity($conn, null, "Gagal Login: Username terlalu pendek ($username)");
+        }
+        elseif (strlen($pwd) < 8) {
+          $err = '⚠️ Password minimal 8 karakter.';
+          logActivity($conn, null, "Gagal Login: Password terlalu pendek ($username)");
+          }
+          elseif (
+            !preg_match('/[A-Z]/', $pwd) ||     // huruf besar
+            !preg_match('/[a-z]/', $pwd) ||     // huruf kecil
+            !preg_match('/[0-9]/', $pwd) ||     // angka
+            !preg_match('/[\W]/', $pwd)         // simbol / notasi
+            ) {
+              $err = '⚠️ Password harus mengandung huruf besar, huruf kecil, angka, dan simbol.';
+              logActivity($conn, null, "Gagal Login: Password tidak sesuai kebijakan ($username)");
     }
-    elseif (strlen($pwd) < 8) {
-        $err = '⚠️ Password minimal 8 karakter.';
-    }
-    elseif (
-        !preg_match('/[A-Z]/', $pwd) ||     // huruf besar
-        !preg_match('/[a-z]/', $pwd) ||     // huruf kecil
-        !preg_match('/[0-9]/', $pwd) ||     // angka
-        !preg_match('/[\W]/', $pwd)         // simbol / notasi
-    ) {
-        $err = '⚠️ Password harus mengandung huruf besar, huruf kecil, angka, dan simbol.';
-    } 
     else {
 
         // =========================
@@ -79,10 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
                 $err = '⚠️ Password salah.';
-            }
-
-        } else {
-            $err = '⚠️ Username tidak ditemukan.';
+                logActivity($conn, null, "Gagal Login: Password untuk user ($username)");
+                }
+                
+                } else {
+                  $err = '⚠️ Username tidak ditemukan.';
+                  logActivity($conn, null, "Gagal Login: Username ($username) tidak terdaftar ");
         }
     }
 }
