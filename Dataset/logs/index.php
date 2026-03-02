@@ -89,6 +89,21 @@ $result = $conn->query($query);
             padding: 2px 4px;
             border-radius: 3px;
         }
+        .ip-text {
+    font-family: monospace;
+    color: #666;
+    background: #eee;
+    padding: 2px 4px;
+    border-radius: 3px;
+    filter: blur(4px);
+    transition: filter 0.3s ease;
+    cursor: pointer;
+}
+
+/* Saat hover → tampil jelas */
+.ip-text:hover {
+    filter: blur(0);
+}
     </style>
 </head>
 <body>
@@ -126,7 +141,11 @@ $result = $conn->query($query);
                 </td>
                 <td><?= $row['nama_lengkap'] ? htmlspecialchars($row['nama_lengkap']) : '-'; ?></td>
                 <td><?= htmlspecialchars($row['aktivitas']); ?></td>
-                <td><span class="ip-text"><?= $row['ip_address']; ?></span></td>
+                <td>
+                    <span class="ip-text" title="Hover untuk melihat IP lengkap">
+                        <?= htmlspecialchars($row['ip_address']); ?>
+                    </span>
+                </td>
                 <td><small><?= date('d M Y, H:i:s', strtotime($row['created_at'])); ?></small></td>
             </tr>
         <?php } ?>
