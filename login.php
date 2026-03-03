@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             !preg_match('/[\W]/', $pwd)         // simbol / notasi
             ) {
               $err = '⚠️ Password harus mengandung huruf besar, huruf kecil, angka, dan simbol.';
-              logActivity($conn, null, "Gagal Login: Password tidak sesuai kebijakan ($username)");
+              logActivity($conn, null, "LOGIN_FAILED");
     }
     else {
 
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // ✅ TAMBAHAN INI SAJA (jangan ubah yang lain)
                 if (function_exists('logActivity')) {
-                    logActivity($conn, $row['id'], "Login ke sistem");
+                    logActivity($conn, $row['id'], "LOGIN_SUCCESS");
                 }
 
                 // Redirect berdasarkan role
@@ -82,12 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
                 $err = '⚠️ Password salah.';
-                logActivity($conn, null, "Gagal Login: Password untuk user ($username)");
+                logActivity($conn, null, "LOGIN_FAILED");
                 }
                 
                 } else {
                   $err = '⚠️ Username tidak ditemukan.';
-                  logActivity($conn, null, "Gagal Login: Username ($username) tidak terdaftar ");
+                  logActivity($conn, null, "LOGIN_FAILED");
         }
     }
 }

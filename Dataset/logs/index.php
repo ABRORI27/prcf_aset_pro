@@ -104,6 +104,36 @@ $result = $conn->query($query);
 .ip-text:hover {
     filter: blur(0);
 }
+/* Professional Badge Colors */
+.badge-green {
+    background-color: #27ae60;
+    color: white;
+}
+
+.badge-red {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.badge-blue {
+    background-color: #3498db;
+    color: white;
+}
+
+.badge-purple {
+    background-color: #8e44ad;
+    color: white;
+}
+
+.badge-orange {
+    background-color: #e67e22;
+    color: white;
+}
+
+.badge-dark {
+    background-color: #2c3e50;
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -127,7 +157,7 @@ $result = $conn->query($query);
         $no = 1;
         while($row = $result->fetch_assoc()) {
             // Logika untuk mendeteksi baris invalid (tanpa user_id)
-            $is_invalid = empty($row['user_id']);
+            $is_invalid = empty($row['user_id']) || $row['activity_type'] === 'LOGIN_FAILED';
             $row_class = $is_invalid ? 'class="row-invalid"' : '';
         ?>
             <tr <?= $row_class ?>>
@@ -140,7 +170,43 @@ $result = $conn->query($query);
                     <?php endif; ?>
                 </td>
                 <td><?= $row['nama_lengkap'] ? htmlspecialchars($row['nama_lengkap']) : '-'; ?></td>
-                <td><?= htmlspecialchars($row['aktivitas']); ?></td>
+<td>
+<?php
+$activity = $row['activity_type'];
+$badge_class = '';
+$icon = '';
+
+switch ($activity) {
+    case 'LOGIN_SUCCESS':
+        $badge_class = 'badge-green';
+        $icon = '✓';
+        break;
+    case 'LOGIN_FAILED':
+        $badge_class = 'badge-red';
+        $icon = '⚠';
+        break;
+    case 'LOGOUT':
+        $badge_class = 'badge-blue';
+        $icon = '⇄';
+        break;
+    case 'CREATE':
+        $badge_class = 'badge-purple';
+        $icon = '+';
+        break;
+    case 'UPDATE':
+        $badge_class = 'badge-orange';
+        $icon = '✎';
+        break;
+    case 'DELETE':
+        $badge_class = 'badge-dark';
+        $icon = '✖';
+        break;
+}
+?>
+<span class="status-badge <?= $badge_class ?>">
+    <?= $icon ?> <?= htmlspecialchars($activity); ?>
+</span>
+</td>
                 <td>
                     <span class="ip-text" title="Hover untuk melihat IP lengkap">
                         <?= htmlspecialchars($row['ip_address']); ?>
