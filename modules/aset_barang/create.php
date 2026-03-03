@@ -1,6 +1,7 @@
 <?php
 include '../../includes/header.php';
 include '../../config/db.php';
+include '../../Dataset/functions/log_activity.php';
 
 // --- Ambil data dropdown ---
 $kategoriList = $conn->query("SELECT id, nama_kategori FROM kategori_barang ORDER BY nama_kategori ASC");
@@ -81,6 +82,10 @@ $stmt->bind_param(
 
   if ($stmt->execute()) {
     $aset_id = $conn->insert_id;
+        // ✅ TAMBAHKAN LOG CREATE
+    if (isset($_SESSION['user']['id'])) {
+        logActivity($conn, $_SESSION['user']['id'], "CREATE", "Menambahkan aset: $nama_barang (ID: $aset_id");
+    }
 
     // Jika kategori kendaraan, masukkan ke tabel kendaraan
     if ($isKendaraan) {

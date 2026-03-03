@@ -85,27 +85,27 @@ if (!empty($where)) {
 
 // --- Query data dengan filter
 $sql = "
-  SELECT ab.*,
+SELECT ab.*,
         k.nama_kategori,
         l.nama_lokasi,
         p.nama_program,
         CONCAT(
-          CASE WHEN ab.periode_bulan IS NOT NULL THEN 
-            CASE ab.periode_bulan 
-              WHEN 1 THEN 'Januari' WHEN 2 THEN 'Februari' WHEN 3 THEN 'Maret' WHEN 4 THEN 'April'
-              WHEN 5 THEN 'Mei' WHEN 6 THEN 'Juni' WHEN 7 THEN 'Juli' WHEN 8 THEN 'Agustus'
-              WHEN 9 THEN 'September' WHEN 10 THEN 'Oktober' WHEN 11 THEN 'November' WHEN 12 THEN 'Desember'
-            END 
-          ELSE '' END,
-          CASE WHEN ab.periode_bulan IS NOT NULL AND ab.periode_tahun IS NOT NULL THEN ' ' ELSE '' END,
-          CASE WHEN ab.periode_tahun IS NOT NULL THEN ab.periode_tahun ELSE '' END
+        CASE WHEN ab.periode_bulan IS NOT NULL THEN
+            CASE ab.periode_bulan
+            WHEN 1 THEN 'Januari' WHEN 2 THEN 'Februari' WHEN 3 THEN 'Maret' WHEN 4 THEN 'April'
+            WHEN 5 THEN 'Mei' WHEN 6 THEN 'Juni' WHEN 7 THEN 'Juli' WHEN 8 THEN 'Agustus'
+            WHEN 9 THEN 'September' WHEN 10 THEN 'Oktober' WHEN 11 THEN 'November' WHEN 12 THEN 'Desember'
+            END
+        ELSE '' END,
+        CASE WHEN ab.periode_bulan IS NOT NULL AND ab.periode_tahun IS NOT NULL THEN ' ' ELSE '' END,
+        CASE WHEN ab.periode_tahun IS NOT NULL THEN ab.periode_tahun ELSE '' END
         ) as periode_display
-  FROM aset_barang ab
-  LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
-  LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
-  LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
-  {$whereSql}
-  ORDER BY ab.periode_tahun DESC, ab.periode_bulan DESC, ab.id DESC
+FROM aset_barang ab
+LEFT JOIN kategori_barang k ON ab.kategori_barang = k.id
+LEFT JOIN lokasi_barang l ON ab.lokasi_barang = l.id
+LEFT JOIN program_pendanaan p ON ab.program_pendanaan = p.id
+{$whereSql}
+ORDER BY ab.periode_tahun DESC, ab.periode_bulan DESC, ab.id DESC
 ";
 
 $stmt = $conn->prepare($sql);

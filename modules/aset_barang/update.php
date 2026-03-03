@@ -1,6 +1,8 @@
 <?php
+session_start();
 include '../../includes/header.php';
 include '../../config/db.php';
+include '../../Dataset/functions/log_activity.php';
 
 // Ambil ID dari URL
 $id = $_GET['id'] ?? null;
@@ -71,6 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($stmtUpdate->execute()) {
+    // ✅ TAMBAHKAN DI SINI
+    if (isset($_SESSION['user']['id'])) {
+        logActivity($conn, $_SESSION['user']['id'], "UPDATE", "Mengubah aset ID: $id");
+    }
+
         echo "<script>alert('✅ Data aset berhasil diperbarui!');window.location='read.php';</script>";
         exit;
     } else {
@@ -169,9 +176,9 @@ $lokasiList = $conn->query("SELECT id, nama_lokasi FROM lokasi_barang ORDER BY n
         <label>Kategori Barang</label>
         <select name="kategori_barang" id="kategori_barang" onchange="toggleKendaraanFields()">
             <option value="1" <?= $aset['kategori_barang']==1?'selected':'' ?>>Office Furniture</option>
-            <option value="2" <?= $aset['kategori_barang']==3?'selected':'' ?>>Field Equipment</option>
-            <option value="3" <?= $aset['kategori_barang']==4?'selected':'' ?>>Kendaraan</option>
-            <option value="4" <?= $aset['kategori_barang']==6?'selected':'' ?>>Office Equipment</option>
+            <option value="2" <?= $aset['kategori_barang']==2?'selected':'' ?>>Field Equipment</option>
+            <option value="3" <?= $aset['kategori_barang']==3?'selected':'' ?>>Kendaraan</option>
+            <option value="4" <?= $aset['kategori_barang']==4?'selected':'' ?>>Office Equipment</option>
         </select>
 
         <!-- ✅ PERBAIKAN: Field tambahan Kendaraan - Hanya untuk kategori 4 -->

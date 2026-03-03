@@ -206,6 +206,11 @@ switch ($activity) {
 <span class="status-badge <?= $badge_class ?>">
     <?= $icon ?> <?= htmlspecialchars($activity); ?>
 </span>
+    <?php if (!empty($row['activity_note'])): ?>
+        <div style="margin-top:4px; font-size:12px; color:#555;">
+            <?= htmlspecialchars($row['activity_note']); ?>
+        </div>
+    <?php endif; ?>
 </td>
                 <td>
                     <span class="ip-text" title="Hover untuk melihat IP lengkap">
